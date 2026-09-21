@@ -1,0 +1,17 @@
+{
+  "name": "mon-garage",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Mon Garage — gestion d'une collection de véhicules (projet Web avancé, thème E : Automobile)",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "vite": "^7.1.0"
+  }
+}

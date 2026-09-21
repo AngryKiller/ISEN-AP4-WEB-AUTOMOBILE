@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Mon Garage — Ma collection de véhicules</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚗</text></svg>" />
+  </head>
+  <body>
+    <!-- ===== En-tête ===== -->
+    <header class="header">
+      <div class="header__brand">
+        <span class="header__logo" aria-hidden="true">🚗</span>
+        <div>
+          <h1 class="header__title">Mon Garage</h1>
+          <p class="header__subtitle">Ma collection de véhicules</p>
+        </div>
+      </div>
+
+      <!-- Sélecteur de thème : auto / clair / sombre -->
+      <div class="theme" role="group" aria-label="Choix du thème">
+        <button type="button" class="theme__btn" data-theme-choix="auto" title="Automatique (système)">
+          <span aria-hidden="true">🖥️</span><span class="theme__label">Auto</span>
+        </button>
+        <button type="button" class="theme__btn" data-theme-choix="clair" title="Thème clair">
+          <span aria-hidden="true">☀️</span><span class="theme__label">Clair</span>
+        </button>
+        <button type="button" class="theme__btn" data-theme-choix="sombre" title="Thème sombre">
+          <span aria-hidden="true">🌙</span><span class="theme__label">Sombre</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="content">
+      <!-- ===== Statistiques ===== -->
+      <section class="stats" aria-label="Statistiques du garage">
+        <article class="stat">
+          <span class="stat__value" id="stat-total">0</span>
+          <span class="stat__label">Véhicules</span>
+        </article>
+        <article class="stat">
+          <span class="stat__value" id="stat-favoris">0</span>
+          <span class="stat__label">Favoris</span>
+        </article>
+        <article class="stat">
+          <span class="stat__value" id="stat-valeur">0 €</span>
+          <span class="stat__label">Valeur totale</span>
+        </article>
+        <article class="stat">
+          <span class="stat__value" id="stat-km">0 km</span>
+          <span class="stat__label">Kilométrage moyen</span>
+        </article>
+      </section>
+
+      <!-- ===== Barre d'outils : recherche, filtres, tri, ajout ===== -->
+      <section class="toolbar" aria-label="Recherche et filtres">
+        <label class="field field--search">
+          <span class="visually-hidden">Rechercher</span>
+          <input type="search" id="recherche" placeholder="Rechercher une marque, un modèle…" autocomplete="off" />
+        </label>
+
+        <label class="field">
+          <span class="visually-hidden">Filtrer</span>
+          <select id="filtre">
+            <option value="tous">Tous les véhicules</option>
+            <option value="favoris">❤️ Favoris uniquement</option>
+            <option value="essence">Essence</option>
+            <option value="diesel">Diesel</option>
+            <option value="hybride">Hybride</option>
+            <option value="electrique">Électrique</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span class="visually-hidden">Trier</span>
+          <select id="tri">
+            <option value="recent">Plus récents ajoutés</option>
+            <option value="annee-desc">Année ↓</option>
+            <option value="annee-asc">Année ↑</option>
+            <option value="prix-desc">Prix ↓</option>
+            <option value="prix-asc">Prix ↑</option>
+            <option value="km-asc">Kilométrage ↑</option>
+            <option value="marque">Marque A → Z</option>
+          </select>
+        </label>
+
+        <button type="button" class="btn btn--primary" id="btn-ajouter">
+          <span aria-hidden="true">＋</span> Ajouter un véhicule
+        </button>
+      </section>
+
+      <!-- ===== Liste des véhicules (grille responsive) ===== -->
+      <section class="garage" id="garage" aria-live="polite"></section>
+
+      <!-- État vide -->
+      <div class="empty-state" id="vide" hidden>
+        <span class="empty-state__icon" aria-hidden="true">🏁</span>
+        <p class="empty-state__text">Aucun véhicule à afficher.</p>
+        <p class="empty-state__help">Ajoutez votre première voiture ou modifiez vos filtres.</p>
+      </div>
+    </main>
+
+    <!-- ===== Formulaire d'ajout / modification (boîte de dialogue native) ===== -->
+    <dialog class="modal" id="modale">
+      <form class="form" id="formulaire" novalidate>
+        <header class="form__header">
+          <h2 class="form__title" id="formulaire-titre">Ajouter un véhicule</h2>
+          <button type="button" class="btn btn--icon" id="btn-fermer" aria-label="Fermer">✕</button>
+        </header>
+
+        <input type="hidden" name="id" />
+
+        <div class="form__grid">
+          <label class="field field--form">
+            <span class="field__label">Marque <em>*</em></span>
+            <input type="text" name="marque" list="liste-marques" placeholder="Ex : Peugeot" required maxlength="40" autocomplete="off" />
+            <datalist id="liste-marques"></datalist>
+            <small class="field__error" data-erreur="marque" data-error="make"></small>
+          </label>
+
+          <label class="field field--form">
+            <span class="field__label">Modèle <em>*</em> <span class="field__hint" id="indice-modeles"></span></span>
+            <input type="text" name="modele" list="liste-modeles" placeholder="Ex : 208" required maxlength="40" autocomplete="off" />
+            <datalist id="liste-modeles"></datalist>
+            <small class="field__error" data-erreur="modele" data-error="model"></small>
+          </label>
+
+          <label class="field field--form">
+            <span class="field__label">Année <em>*</em></span>
+            <input type="number" name="annee" placeholder="2020" required min="1886" step="1" inputmode="numeric" />
+            <small class="field__error" data-erreur="annee" data-error="year"></small>
+          </label>
+
+          <label class="field field--form">
+            <span class="field__label">Kilométrage (km) <em>*</em></span>
+            <input type="number" name="kilometrage" placeholder="45000" required min="0" step="1" inputmode="numeric" />
+            <small class="field__error" data-erreur="kilometrage" data-error="mileage"></small>
+          </label>
+
+          <label class="field field--form">
+            <span class="field__label">Prix estimé (€) <em>*</em></span>
+            <input type="number" name="prix" placeholder="12000" required min="0" step="1" inputmode="numeric" />
+            <small class="field__error" data-erreur="prix" data-error="price"></small>
+          </label>
+
+          <label class="field field--form">
+            <span class="field__label">Carburant <em>*</em></span>
+            <select name="carburant" required>
+              <option value="">— Choisir —</option>
+              <option value="essence">Essence</option>
+              <option value="diesel">Diesel</option>
+              <option value="hybride">Hybride</option>
+              <option value="electrique">Électrique</option>
+            </select>
+            <small class="field__error" data-erreur="carburant" data-error="fuel"></small>
+          </label>
+
+          <label class="field field--form">
+            <span class="field__label">Immatriculation</span>
+            <input type="text" name="immatriculation" placeholder="AB-123-CD" maxlength="9" autocomplete="off" />
+            <small class="field__error" data-erreur="immatriculation" data-error="licensePlate"></small>
+          </label>
+
+          <label class="field field--form field--color">
+            <span class="field__label">Couleur</span>
+            <input type="color" name="couleur" value="#e63946" />
+          </label>
+        </div>
+
+        <footer class="form__footer">
+          <button type="button" class="btn" id="btn-annuler">Annuler</button>
+          <button type="submit" class="btn btn--primary" id="btn-valider">Enregistrer</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <!-- ===== Modèle (template) d'une carte véhicule, cloné par JS ===== -->
+    <template id="tpl-carte">
+      <article class="card">
+        <div class="card__banner"></div>
+        <header class="card__header">
+          <div>
+            <h3 class="card__title"></h3>
+            <p class="card__subtitle"></p>
+          </div>
+          <button type="button" class="card__favorite" data-action="favori" aria-label="Ajouter aux favoris">
+            <span class="card__heart" aria-hidden="true">♥</span>
+          </button>
+        </header>
+        <ul class="card__info-list">
+          <li><span class="card__info-label">Kilométrage</span><span class="card__mileage"></span></li>
+          <li><span class="card__info-label">Prix</span><span class="card__price"></span></li>
+          <li><span class="card__info-label">Immat.</span><span class="card__plate"></span></li>
+        </ul>
+        <footer class="card__footer">
+          <span class="badge card__fuel"></span>
+          <div class="card__actions">
+            <button type="button" class="btn btn--small" data-action="modifier">Modifier</button>
+            <button type="button" class="btn btn--small btn--danger" data-action="supprimer">Supprimer</button>
+          </div>
+        </footer>
+      </article>
+    </template>
+
+    <!-- Notifications -->
+    <div class="toasts" id="toasts" aria-live="polite"></div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

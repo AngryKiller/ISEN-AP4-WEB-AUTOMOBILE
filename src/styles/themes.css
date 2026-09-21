@@ -1,0 +1,72 @@
+/* ============================================================
+   themes.css — Color variables, light / dark / auto theme
+   ============================================================ */
+
+:root {
+  /* Brand palette */
+  --accent: #e63946;
+  --accent-dark: #c1121f;
+  --accent-soft: rgba(230, 57, 70, 0.12);
+
+  /* Surfaces & text (light) */
+  --bg: #f4f5f7;
+  --bg-gradient: radial-gradient(circle at 20% -10%, #ffe3e6 0, transparent 45%),
+    radial-gradient(circle at 100% 0, #dfe9ff 0, transparent 40%);
+  --surface: #ffffff;
+  --surface-2: #f0f1f4;
+  --border: #e2e4ea;
+  --text: #14171f;
+  --text-secondary: #5b6170;
+  --shadow: 0 1px 2px rgba(20, 23, 31, 0.06), 0 8px 24px rgba(20, 23, 31, 0.08);
+  --shadow-strong: 0 12px 40px rgba(20, 23, 31, 0.18);
+
+  /* Status */
+  --success: #2a9d8f;
+  --danger: #d62828;
+  --favorite: #ff3b5c;
+
+  /* Fuel types */
+  --petrol: #f4a261;
+  --diesel: #6c757d;
+  --hybrid: #2a9d8f;
+  --electric: #3a86ff;
+
+  --radius: 14px;
+  --transition: 180ms ease;
+
+  color-scheme: light;
+}
+
+/* Dark mode variables (auto & manual) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']):not([data-theme='clair']) {
+    --bg: #0f1117;
+    --bg-gradient: radial-gradient(circle at 20% -10%, #3a1219 0, transparent 45%),
+      radial-gradient(circle at 100% 0, #10203f 0, transparent 40%);
+    --surface: #181b25;
+    --surface-2: #21252f;
+    --border: #2c3140;
+    --text: #eef0f5;
+    --text-secondary: #9aa1b3;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+    --shadow-strong: 0 12px 40px rgba(0, 0, 0, 0.6);
+    --accent-soft: rgba(230, 57, 70, 0.22);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'],
+:root[data-theme='sombre'] {
+  --bg: #0f1117;
+  --bg-gradient: radial-gradient(circle at 20% -10%, #3a1219 0, transparent 45%),
+    radial-gradient(circle at 100% 0, #10203f 0, transparent 40%);
+  --surface: #181b25;
+  --surface-2: #21252f;
+  --border: #2c3140;
+  --text: #eef0f5;
+  --text-secondary: #9aa1b3;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-strong: 0 12px 40px rgba(0, 0, 0, 0.6);
+  --accent-soft: rgba(230, 57, 70, 0.22);
+  color-scheme: dark;
+}
