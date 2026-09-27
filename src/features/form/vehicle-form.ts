@@ -70,6 +70,12 @@ function populateForm(vehicle: Vehicle): void {
     immatriculation: vehicle.licensePlate,
     color: vehicle.color,
     couleur: vehicle.color,
+    nextOilChangeKm: vehicle.nextOilChangeKm,
+    nextRevisionKm: vehicle.nextRevisionKm,
+    lastRevisionDate: vehicle.lastRevisionDate,
+    maintenanceNotes: vehicle.maintenanceNotes,
+    tirePressure: vehicle.tirePressure,
+    recommendedTirePressure: vehicle.recommendedTirePressure,
   };
 
   for (const [key, value] of Object.entries(fieldMapping)) {
@@ -105,6 +111,11 @@ function displayValidationErrors(errors: ValidationErrors): void {
     price: ['price', 'prix'],
     fuel: ['fuel', 'carburant'],
     licensePlate: ['licensePlate', 'immatriculation'],
+    nextOilChangeKm: ['nextOilChangeKm'],
+    nextRevisionKm: ['nextRevisionKm'],
+    maintenanceNotes: ['maintenanceNotes'],
+    tirePressure: ['tirePressure'],
+    recommendedTirePressure: ['recommendedTirePressure'],
   };
 
   for (const [field, message] of Object.entries(errors)) {

@@ -358,6 +358,44 @@ input[type='color'] {
   letter-spacing: 0.06em;
 }
 
+.card__maintenance {
+  padding: 0 18px 12px;
+  border-top: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.card__maintenance-title {
+  margin: 0;
+  padding: 12px 0 8px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.card__maintenance-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--text);
+}
+
+.card__maintenance-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.card__maintenance-item::before {
+  content: '•';
+  color: var(--accent);
+  font-weight: 700;
+}
+
 .card__footer {
   margin-top: auto;
   display: flex;
@@ -471,6 +509,10 @@ input[type='color'] {
 
 .field--form {
   gap: 4px;
+}
+
+.field--wide {
+  grid-column: 1 / -1;
 }
 
 .field__label {

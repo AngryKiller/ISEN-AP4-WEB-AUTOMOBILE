@@ -20,6 +20,12 @@ export interface Vehicle {
   favorite: boolean;
   createdAt: number;
   updatedAt?: number;
+  nextOilChangeKm?: number;
+  nextRevisionKm?: number;
+  lastRevisionDate?: string;
+  maintenanceNotes?: string;
+  tirePressure?: number;
+  recommendedTirePressure?: number;
 }
 
 /** Raw form input data before creating a complete vehicle */
@@ -32,6 +38,12 @@ export interface VehicleFormInput {
   fuel: FuelType | '';
   licensePlate: string;
   color: string;
+  nextOilChangeKm?: number;
+  nextRevisionKm?: number;
+  lastRevisionDate?: string;
+  maintenanceNotes?: string;
+  tirePressure?: number;
+  recommendedTirePressure?: number;
 }
 
 /** Data required to create a new vehicle (id, favorite, createdAt are auto-generated) */

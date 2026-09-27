@@ -49,6 +49,40 @@ export function validateVehicle(data: VehicleFormInput): ValidationErrors {
     errors.licensePlate = 'Format attendu : AB-123-CD.';
   }
 
+  if (typeof data.nextOilChangeKm === 'number' && Number.isNaN(data.nextOilChangeKm)) {
+    errors.nextOilChangeKm = 'Valeur invalide.';
+  } else if (typeof data.nextOilChangeKm === 'number' && data.nextOilChangeKm < 0) {
+    errors.nextOilChangeKm = 'Doit être positif.';
+  }
+
+  if (typeof data.nextRevisionKm === 'number' && Number.isNaN(data.nextRevisionKm)) {
+    errors.nextRevisionKm = 'Valeur invalide.';
+  } else if (typeof data.nextRevisionKm === 'number' && data.nextRevisionKm < 0) {
+    errors.nextRevisionKm = 'Doit être positif.';
+  }
+
+  if (data.maintenanceNotes && data.maintenanceNotes.length > 200) {
+    errors.maintenanceNotes = 'Maximum 200 caractères.';
+  }
+
+  if (typeof data.tirePressure === 'number' && Number.isNaN(data.tirePressure)) {
+    errors.tirePressure = 'Valeur invalide.';
+  } else if (typeof data.tirePressure === 'number' && (data.tirePressure < 0 || data.tirePressure > 6)) {
+    errors.tirePressure = 'Pression entre 0 et 6 bar.';
+  }
+
+  if (
+    typeof data.recommendedTirePressure === 'number' &&
+    Number.isNaN(data.recommendedTirePressure)
+  ) {
+    errors.recommendedTirePressure = 'Valeur invalide.';
+  } else if (
+    typeof data.recommendedTirePressure === 'number' &&
+    (data.recommendedTirePressure < 0 || data.recommendedTirePressure > 6)
+  ) {
+    errors.recommendedTirePressure = 'Pression entre 0 et 6 bar.';
+  }
+
   return errors;
 }
 
@@ -76,6 +110,12 @@ export function normalizeFormData(formData: FormData): VehicleFormInput {
   const price = !Number.isNaN(readNumber('price')) ? readNumber('price') : readNumber('prix');
   const licensePlate = (readText('licensePlate') || readText('immatriculation')).toUpperCase();
   const color = readText('color') || readText('couleur') || '#e63946';
+  const nextOilChangeKm = readNumber('nextOilChangeKm');
+  const nextRevisionKm = readNumber('nextRevisionKm');
+  const lastRevisionDate = readText('lastRevisionDate');
+  const maintenanceNotes = readText('maintenanceNotes');
+  const tirePressure = readNumber('tirePressure');
+  const recommendedTirePressure = readNumber('recommendedTirePressure');
 
   return {
     make,
@@ -86,5 +126,13 @@ export function normalizeFormData(formData: FormData): VehicleFormInput {
     fuel,
     licensePlate,
     color,
+    nextOilChangeKm: Number.isNaN(nextOilChangeKm) ? undefined : nextOilChangeKm,
+    nextRevisionKm: Number.isNaN(nextRevisionKm) ? undefined : nextRevisionKm,
+    lastRevisionDate: lastRevisionDate || undefined,
+    maintenanceNotes: maintenanceNotes || undefined,
+    tirePressure: Number.isNaN(tirePressure) ? undefined : tirePressure,
+    recommendedTirePressure: Number.isNaN(recommendedTirePressure)
+      ? undefined
+      : recommendedTirePressure,
   };
 }
