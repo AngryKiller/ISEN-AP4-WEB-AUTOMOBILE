@@ -3,7 +3,6 @@
  */
 
 import { loadVehicles, saveVehicles } from './storage';
-import { DEMO_VEHICLES } from '../data/demo-vehicles';
 import type {
   GarageState,
   GarageStateKey,
@@ -19,7 +18,7 @@ const listeners = new Set<StateChangeListener>();
 
 const storedVehicles = loadVehicles();
 const initialState: GarageState = {
-  vehicles: storedVehicles ? [...storedVehicles] : [...DEMO_VEHICLES],
+  vehicles: storedVehicles ? [...storedVehicles] : [],
   searchQuery: '',
   filter: 'all',
   sortBy: 'recent',
