@@ -53,6 +53,38 @@ export function updateCardContent(card: HTMLElement, vehicle: Vehicle): void {
     fuelBadge.dataset.fuel = vehicle.fuel;
   }
 
+  const maintenanceContainer = card.querySelector<HTMLElement>('.card__maintenance');
+  const maintenanceList = card.querySelector<HTMLElement>('.card__maintenance-list');
+  if (maintenanceContainer && maintenanceList) {
+    const lines: string[] = [];
+    if (typeof vehicle.nextOilChangeKm === 'number') {
+      lines.push(`Vidange : ${formatMileage(vehicle.nextOilChangeKm)} km`);
+    }
+    if (typeof vehicle.nextRevisionKm === 'number') {
+      lines.push(`Révision : ${formatMileage(vehicle.nextRevisionKm)} km`);
+    }
+    if (vehicle.lastRevisionDate) {
+      lines.push(`Dernière révision : ${vehicle.lastRevisionDate}`);
+    }
+    if (typeof vehicle.tirePressure === 'number') {
+      const recommended = typeof vehicle.recommendedTirePressure === 'number'
+        ? ` / ${vehicle.recommendedTirePressure.toFixed(1)} bar`
+        : '';
+      lines.push(`Pression pneus : ${vehicle.tirePressure.toFixed(1)} bar${recommended}`);
+    } else if (typeof vehicle.recommendedTirePressure === 'number') {
+      lines.push(`Pression recommandée : ${vehicle.recommendedTirePressure.toFixed(1)} bar`);
+    }
+    if (!lines.length) {
+      maintenanceContainer.hidden = true;
+      maintenanceList.innerHTML = '';
+    } else {
+      maintenanceContainer.hidden = false;
+      maintenanceList.innerHTML = lines
+        .map((line) => `<li class="card__maintenance-item">${line}</li>`)
+        .join('');
+    }
+  }
+
   const favoriteButton = card.querySelector<HTMLButtonElement>('[data-action="favori"]');
   if (favoriteButton) {
     const isActive = vehicle.favorite;

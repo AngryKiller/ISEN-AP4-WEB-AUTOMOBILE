@@ -145,6 +145,24 @@
           </label>
 
           <label class="field field--form">
+            <span class="field__label">Vidange (km)</span>
+            <input type="number" name="nextOilChangeKm" placeholder="15000" min="0" step="100" inputmode="numeric" />
+            <small class="field__error" data-error="nextOilChangeKm"></small>
+          </label>
+
+          <label class="field field--form">
+            <span class="field__label">Révision (km)</span>
+            <input type="number" name="nextRevisionKm" placeholder="20000" min="0" step="100" inputmode="numeric" />
+            <small class="field__error" data-error="nextRevisionKm"></small>
+          </label>
+
+          <label class="field field--form">
+            <span class="field__label">Dernière révision</span>
+            <input type="date" name="lastRevisionDate" />
+            <small class="field__error" data-error="lastRevisionDate"></small>
+          </label>
+
+          <label class="field field--form">
             <span class="field__label">Carburant <em>*</em></span>
             <select name="carburant" required>
               <option value="">— Choisir —</option>
@@ -165,6 +183,24 @@
           <label class="field field--form field--color">
             <span class="field__label">Couleur</span>
             <input type="color" name="couleur" value="#e63946" />
+          </label>
+
+          <label class="field field--form">
+            <span class="field__label">Pression actuelle (bar)</span>
+            <input type="number" name="tirePressure" placeholder="2.4" min="0" max="6" step="0.1" inputmode="decimal" />
+            <small class="field__error" data-error="tirePressure"></small>
+          </label>
+
+          <label class="field field--form">
+            <span class="field__label">Pression recommandée (bar)</span>
+            <input type="number" name="recommendedTirePressure" placeholder="2.5" min="0" max="6" step="0.1" inputmode="decimal" />
+            <small class="field__error" data-error="recommendedTirePressure"></small>
+          </label>
+
+          <label class="field field--form field--wide">
+            <span class="field__label">Notes d’entretien</span>
+            <textarea name="maintenanceNotes" rows="3" placeholder="À signaler : bruit, freinage, etc."></textarea>
+            <small class="field__error" data-error="maintenanceNotes"></small>
           </label>
         </div>
 
@@ -193,6 +229,10 @@
           <li><span class="card__info-label">Prix</span><span class="card__price"></span></li>
           <li><span class="card__info-label">Immat.</span><span class="card__plate"></span></li>
         </ul>
+        <div class="card__maintenance" hidden>
+          <p class="card__maintenance-title">Entretien</p>
+          <ul class="card__maintenance-list"></ul>
+        </div>
         <footer class="card__footer">
           <span class="badge card__fuel"></span>
           <div class="card__actions">
