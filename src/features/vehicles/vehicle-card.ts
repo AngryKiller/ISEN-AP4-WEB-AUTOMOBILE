@@ -4,6 +4,7 @@
 
 import type { Vehicle } from '../../models';
 import { formatCurrency, formatMileage, FUEL_LABELS } from '../../utils';
+import { getDrivingModeOption } from '../driving-mode';
 
 const cardTemplate = document.getElementById('tpl-carte') as HTMLTemplateElement | null;
 
@@ -84,6 +85,48 @@ export function updateCardContent(card: HTMLElement, vehicle: Vehicle): void {
         .join('');
     }
   }
+
+  const drivingMode = getDrivingModeOption(vehicle.drivingMode);
+  const modeSettings = vehicle.modeSettings[vehicle.drivingMode] ?? {};
+  const drivingCurrent = card.querySelector<HTMLElement>('.card__driving-current');
+  if (drivingCurrent) drivingCurrent.textContent = `Mode sélectionné : ${drivingMode.icon} ${drivingMode.label}`;
+
+  card.querySelectorAll<HTMLButtonElement>('[data-action="mode-conduite"]').forEach((button) => {
+    const isSelected = button.dataset.mode === vehicle.drivingMode;
+    button.classList.toggle('card__driving-option--active', isSelected);
+    button.setAttribute('aria-pressed', String(isSelected));
+  });
+
+  const recommendationsList = card.querySelector<HTMLElement>('.card__driving-recommendations');
+  if (recommendationsList) {
+    recommendationsList.replaceChildren(
+      ...drivingMode.recommendations.map((recommendation) => {
+        const item = document.createElement('li');
+        item.textContent = recommendation;
+        return item;
+      }),
+    );
+    recommendationsList.classList.remove('card__driving-recommendations--visible');
+    void recommendationsList.offsetWidth;
+    recommendationsList.classList.add('card__driving-recommendations--visible');
+  }
+
+  const pressureInput = card.querySelector<HTMLInputElement>('[data-setting="tire-pressure"]');
+  if (pressureInput) {
+    const pressure = modeSettings.recommendedTirePressure ?? vehicle.recommendedTirePressure;
+    pressureInput.value = typeof pressure === 'number' ? String(pressure) : '';
+  }
+
+  const consumptionInput = card.querySelector<HTMLInputElement>('[data-setting="consumption"]');
+  if (consumptionInput) {
+    consumptionInput.value =
+      typeof modeSettings.targetConsumption === 'number'
+        ? String(modeSettings.targetConsumption)
+        : '';
+  }
+
+  const noteInput = card.querySelector<HTMLTextAreaElement>('[data-setting="note"]');
+  if (noteInput) noteInput.value = modeSettings.note ?? '';
 
   const favoriteButton = card.querySelector<HTMLButtonElement>('[data-action="favori"]');
   if (favoriteButton) {

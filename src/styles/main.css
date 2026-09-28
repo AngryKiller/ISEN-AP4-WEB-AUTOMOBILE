@@ -396,6 +396,113 @@ input[type='color'] {
   font-weight: 700;
 }
 
+.card__driving-mode {
+  padding: 12px 18px 14px;
+  border-top: 1px solid var(--border);
+}
+
+.card__driving-mode-title {
+  margin-bottom: 8px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.card__driving-options {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.card__driving-option {
+  min-width: 0;
+  padding: 6px 4px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.72rem;
+  transition: background var(--transition), border-color var(--transition), color var(--transition), transform var(--transition);
+}
+
+.card__driving-option:hover {
+  transform: translateY(-1px);
+  color: var(--text);
+}
+
+.card__driving-option--active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+  font-weight: 700;
+}
+
+.card__driving-current {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.card__driving-recommendations {
+  display: grid;
+  gap: 4px;
+  margin: 6px 0 0;
+  padding-left: 18px;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}
+
+.card__driving-recommendations--visible {
+  animation: driving-mode-reveal 240ms ease both;
+}
+
+.card__driving-settings {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.card__driving-settings-title {
+  grid-column: 1 / -1;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.card__driving-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+.card__driving-field--wide {
+  grid-column: 1 / -1;
+}
+
+.card__driving-field input,
+.card__driving-field textarea {
+  width: 100%;
+  padding: 7px 9px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.8rem;
+  resize: vertical;
+}
+
+.card__driving-settings .btn {
+  grid-column: 1 / -1;
+}
+
 .card__footer {
   margin-top: auto;
   display: flex;
@@ -641,6 +748,10 @@ input[type='color'] {
 }
 
 @media (max-width: 400px) {
+  .card__driving-options {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .card__footer {
     flex-direction: column;
     align-items: stretch;
@@ -648,5 +759,9 @@ input[type='color'] {
 
   .card__actions .btn {
     flex: 1;
+  }
+
+  .card__driving-settings {
+    grid-template-columns: 1fr;
   }
 }

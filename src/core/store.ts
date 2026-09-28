@@ -7,6 +7,8 @@ import type {
   GarageState,
   GarageStateKey,
   GarageStatistics,
+  DrivingMode,
+  DrivingModeSettings,
   SortOption,
   StateChangeListener,
   Vehicle,
@@ -61,6 +63,8 @@ export function addVehicle(data: VehicleCreationData): Vehicle {
     ...data,
     id: crypto.randomUUID(),
     favorite: false,
+    drivingMode: 'comfort',
+    modeSettings: {},
     createdAt: Date.now(),
   };
   store.vehicles = [newVehicle, ...store.vehicles];
@@ -80,6 +84,28 @@ export function deleteVehicle(id: string): void {
 export function toggleFavorite(id: string): void {
   store.vehicles = store.vehicles.map((vehicle) =>
     vehicle.id === id ? { ...vehicle, favorite: !vehicle.favorite } : vehicle,
+  );
+}
+
+export function setDrivingMode(id: string, drivingMode: DrivingMode): void {
+  store.vehicles = store.vehicles.map((vehicle) =>
+    vehicle.id === id ? { ...vehicle, drivingMode, updatedAt: Date.now() } : vehicle,
+  );
+}
+
+export function updateDrivingModeSettings(
+  id: string,
+  drivingMode: DrivingMode,
+  settings: DrivingModeSettings,
+): void {
+  store.vehicles = store.vehicles.map((vehicle) =>
+    vehicle.id === id
+      ? {
+          ...vehicle,
+          modeSettings: { ...vehicle.modeSettings, [drivingMode]: settings },
+          updatedAt: Date.now(),
+        }
+      : vehicle,
   );
 }
 

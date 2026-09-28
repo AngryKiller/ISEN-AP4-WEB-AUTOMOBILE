@@ -233,6 +233,34 @@
           <p class="card__maintenance-title">Entretien</p>
           <ul class="card__maintenance-list"></ul>
         </div>
+        <section class="card__driving-mode" aria-label="Mode de conduite">
+          <p class="card__driving-mode-title">Mode de conduite</p>
+          <div class="card__driving-options" role="group" aria-label="Choisir un mode de conduite">
+            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="comfort">🚗 Confort</button>
+            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="sport">🏎️ Sport</button>
+            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="eco">🌱 Éco</button>
+            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="rain">🌧️ Pluie</button>
+            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="winter">❄️ Hiver</button>
+          </div>
+          <p class="card__driving-current" aria-live="polite"></p>
+          <ul class="card__driving-recommendations"></ul>
+          <div class="card__driving-settings">
+            <p class="card__driving-settings-title">Réglages du mode actif</p>
+            <label class="card__driving-field">
+              <span>Pression recommandée (bar)</span>
+              <input type="number" data-setting="tire-pressure" min="0" max="6" step="0.1" inputmode="decimal" placeholder="2.5" />
+            </label>
+            <label class="card__driving-field">
+              <span>Objectif de consommation (L/100 km)</span>
+              <input type="number" data-setting="consumption" min="0" max="50" step="0.1" inputmode="decimal" placeholder="6.0" />
+            </label>
+            <label class="card__driving-field card__driving-field--wide">
+              <span>Note pour ce mode</span>
+              <textarea data-setting="note" rows="2" maxlength="200" placeholder="Ex. conduite souple en ville"></textarea>
+            </label>
+            <button type="button" class="btn btn--small" data-action="save-mode-settings">Enregistrer les réglages</button>
+          </div>
+        </section>
         <footer class="card__footer">
           <span class="badge card__fuel"></span>
           <div class="card__actions">

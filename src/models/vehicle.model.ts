@@ -6,6 +6,16 @@ export const FUEL_TYPES = ['petrol', 'diesel', 'hybrid', 'electric'] as const;
 
 export type FuelType = (typeof FUEL_TYPES)[number];
 
+export const DRIVING_MODES = ['comfort', 'sport', 'eco', 'rain', 'winter'] as const;
+
+export type DrivingMode = (typeof DRIVING_MODES)[number];
+
+export interface DrivingModeSettings {
+  recommendedTirePressure?: number;
+  targetConsumption?: number;
+  note?: string;
+}
+
 /** Complete Vehicle entity stored and used across the application */
 export interface Vehicle {
   id: string;
@@ -18,6 +28,8 @@ export interface Vehicle {
   licensePlate?: string;
   color: string;
   favorite: boolean;
+  drivingMode: DrivingMode;
+  modeSettings: Partial<Record<DrivingMode, DrivingModeSettings>>;
   createdAt: number;
   updatedAt?: number;
   nextOilChangeKm?: number;
@@ -47,7 +59,10 @@ export interface VehicleFormInput {
 }
 
 /** Data required to create a new vehicle (id, favorite, createdAt are auto-generated) */
-export type VehicleCreationData = Omit<Vehicle, 'id' | 'favorite' | 'createdAt' | 'updatedAt'>;
+export type VehicleCreationData = Omit<
+  Vehicle,
+  'id' | 'favorite' | 'drivingMode' | 'modeSettings' | 'createdAt' | 'updatedAt'
+>;
 
 /** Partial data for updating an existing vehicle */
 export type VehicleUpdateData = Partial<Omit<Vehicle, 'id' | 'createdAt'>>;

@@ -7,8 +7,10 @@ import {
   deleteVehicle,
   findVehicleById,
   onStateChange,
+  setDrivingMode,
   store,
   toggleFavorite,
+  updateDrivingModeSettings,
 } from './core';
 import {
   animateHeartPop,
@@ -17,8 +19,9 @@ import {
 import { renderStatistics } from './features/stats';
 import { initVehicleForm, openVehicleForm } from './features/form';
 import { initTheme } from './features/theme';
+import { isDrivingMode } from './features/driving-mode';
 import { debounce, showToast } from './utils';
-import type { FilterOption, SortOption } from './models';
+import type { DrivingModeSettings, FilterOption, SortOption } from './models';
 
 /* 1. Theme initialization */
 initTheme();
@@ -85,6 +88,44 @@ garageContainer?.addEventListener('click', (event: MouseEvent) => {
       animateHeartPop(id);
       toggleFavorite(id);
       break;
+
+    case 'mode-conduite': {
+      const mode = button.dataset.mode;
+      if (isDrivingMode(mode)) {
+        setDrivingMode(id, mode);
+      }
+      break;
+    }
+
+    case 'save-mode-settings': {
+      if (!vehicle) break;
+
+      const pressureInput = card?.querySelector<HTMLInputElement>('[data-setting="tire-pressure"]');
+      const consumptionInput = card?.querySelector<HTMLInputElement>('[data-setting="consumption"]');
+      const noteInput = card?.querySelector<HTMLTextAreaElement>('[data-setting="note"]');
+      const pressure = pressureInput?.value.trim() ? Number(pressureInput.value) : undefined;
+      const consumption = consumptionInput?.value.trim()
+        ? Number(consumptionInput.value)
+        : undefined;
+
+      if (
+        (pressure !== undefined && (Number.isNaN(pressure) || pressure < 0 || pressure > 6)) ||
+        (consumption !== undefined &&
+          (Number.isNaN(consumption) || consumption < 0 || consumption > 50))
+      ) {
+        showToast('Vérifiez les valeurs des réglages.', 'danger');
+        break;
+      }
+
+      const settings: DrivingModeSettings = {
+        recommendedTirePressure: pressure,
+        targetConsumption: consumption,
+        note: noteInput?.value.trim() || undefined,
+      };
+      updateDrivingModeSettings(id, vehicle.drivingMode, settings);
+      showToast('Réglages du mode enregistrés.', 'success');
+      break;
+    }
 
     case 'modifier':
       openVehicleForm(id);
