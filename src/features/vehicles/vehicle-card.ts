@@ -89,7 +89,19 @@ export function updateCardContent(card: HTMLElement, vehicle: Vehicle): void {
   const drivingMode = getDrivingModeOption(vehicle.drivingMode);
   const modeSettings = vehicle.modeSettings[vehicle.drivingMode] ?? {};
   const drivingCurrent = card.querySelector<HTMLElement>('.card__driving-current');
-  if (drivingCurrent) drivingCurrent.textContent = `Mode sélectionné : ${drivingMode.icon} ${drivingMode.label}`;
+  if (drivingCurrent) {
+  drivingCurrent.replaceChildren();
+
+  const icon = document.createElement('img');
+  icon.src = drivingMode.icon;
+  icon.alt = '';
+  icon.className = 'card__driving-icon';
+
+  drivingCurrent.append(
+    icon,
+    document.createTextNode(`Mode sélectionné : ${drivingMode.label}`),
+  );
+}
 
   card.querySelectorAll<HTMLButtonElement>('[data-action="mode-conduite"]').forEach((button) => {
     const isSelected = button.dataset.mode === vehicle.drivingMode;
