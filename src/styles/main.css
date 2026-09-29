@@ -88,7 +88,8 @@ select {
 
 /* Theme selector */
 .theme {
-  display: flex;
+  display: inline-flex;
+  align-items: center;
   padding: 4px;
   gap: 2px;
   background: var(--surface-2);
@@ -97,16 +98,19 @@ select {
 }
 
 .theme__btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: 6px 12px;
+  height: 32px;
+  padding: 0 12px;
   border: 0;
   border-radius: 999px;
   background: transparent;
   color: var(--text-secondary);
   cursor: pointer;
   font-size: 0.85rem;
+  line-height: 1;
   transition: background var(--transition), color var(--transition), transform var(--transition);
 }
 
@@ -118,6 +122,31 @@ select {
   background: var(--surface);
   color: var(--text);
   box-shadow: var(--shadow);
+}
+
+.theme__icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  flex-shrink: 0;
+  display: block;
+  pointer-events: none;
+}
+
+.theme__label {
+  pointer-events: none;
+}
+
+/* Invert monochrome theme PNG icons in dark mode */
+:root[data-theme='dark'] .theme__icon[src],
+:root[data-theme='sombre'] .theme__icon[src] {
+  filter: brightness(0) invert(0.95);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']):not([data-theme='clair']) .theme__icon[src] {
+    filter: brightness(0) invert(0.95);
+  }
 }
 
 /* ---------- Content ---------- */
@@ -417,24 +446,33 @@ input[type='color'] {
 .card__driving-options {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 4px;
+  gap: 6px;
 }
 
 .card__driving-option {
   min-width: 0;
-  padding: 6px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 4px 6px;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--surface-2);
   color: var(--text-secondary);
   cursor: pointer;
   font-size: 0.72rem;
-  transition: background var(--transition), border-color var(--transition), color var(--transition), transform var(--transition);
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+  transition: background var(--transition), border-color var(--transition), color var(--transition), transform var(--transition), box-shadow var(--transition);
 }
 
 .card__driving-option:hover {
   transform: translateY(-1px);
   color: var(--text);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
 }
 
 .card__driving-option--active {
@@ -442,19 +480,55 @@ input[type='color'] {
   background: var(--accent-soft);
   color: var(--accent-dark);
   font-weight: 700;
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.card__driving-option-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
+  display: block;
+  pointer-events: none;
+}
+
+.card__driving-option-label {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  pointer-events: none;
+}
+
+.card__driving-current {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
 }
 
 .card__driving-icon {
   width: 20px;
   height: 20px;
   object-fit: contain;
-  vertical-align: middle;
+  flex-shrink: 0;
+  display: block;
 }
 
-.card__driving-current {
-  margin-top: 8px;
-  font-size: 0.8rem;
-  font-weight: 600;
+.card__driving-current-text {
+  flex: 1;
+}
+
+:root[data-theme='dark'] .card__driving-option-icon,
+:root[data-theme='sombre'] .card__driving-option-icon,
+:root[data-theme='dark'] .card__driving-icon,
+:root[data-theme='sombre'] .card__driving-icon {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
 }
 
 .card__driving-recommendations {
@@ -752,6 +826,13 @@ input[type='color'] {
   .header__subtitle,
   .theme__label {
     display: none;
+  }
+
+  .theme__btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    justify-content: center;
   }
 
   .stats {

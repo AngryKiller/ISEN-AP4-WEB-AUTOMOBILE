@@ -20,14 +20,19 @@
       <!-- Sélecteur de thème : auto / clair / sombre -->
       <div class="theme" role="group" aria-label="Choix du thème">
         <button type="button" class="theme__btn" data-theme-choix="auto" title="Automatique (système)">
+          <svg class="theme__icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
           <span class="theme__label">Auto</span>
         </button>
         <button type="button" class="theme__btn" data-theme-choix="clair" title="Thème clair">
-          <img src="/icons/mode-nuit.png" alt="Mode clair" width="20" height="20" />
+          <img class="theme__icon" src="/icons/mode-nuit.png" alt="" width="18" height="18" />
           <span class="theme__label">Clair</span>
         </button>
         <button type="button" class="theme__btn" data-theme-choix="sombre" title="Thème sombre">
-          <img src="/icons/mode-nuit-2.png" alt="Mode sombre" width="20" height="20" />
+          <img class="theme__icon" src="/icons/mode-nuit-2.png" alt="" width="18" height="18" />
           <span class="theme__label">Sombre</span>
         </button>
       </div>
@@ -309,11 +314,26 @@
         <section class="card__driving-mode" aria-label="Mode de conduite">
           <p class="card__driving-mode-title">Mode de conduite</p>
           <div class="card__driving-options" role="group" aria-label="Choisir un mode de conduite">
-            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="comfort"><img src="/icons/mode-confort.png" alt="Mode confort" width="20" height="20" /> Confort</button>
-            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="sport"><img src="/icons/mode-sport.png" alt="Mode sport" width="20" height="20" /> Sport</button>
-            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="eco"><img src="/icons/eco.png" alt="Mode éco" width="20" height="20" /> Éco</button>
-            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="rain"><img src="/icons/pluie.png" alt="Mode pluie" width="20" height="20" /> Pluie</button>
-            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="winter"><img src="/icons/flocon-de-neige.png" alt="Mode hiver" width="20" height="20" /> Hiver</button>
+            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="comfort">
+              <img class="card__driving-option-icon" src="/icons/mode-confort.png" alt="" width="22" height="22" />
+              <span class="card__driving-option-label">Confort</span>
+            </button>
+            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="sport">
+              <img class="card__driving-option-icon" src="/icons/mode-sport.png" alt="" width="22" height="22" />
+              <span class="card__driving-option-label">Sport</span>
+            </button>
+            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="eco">
+              <img class="card__driving-option-icon" src="/icons/eco.png" alt="" width="22" height="22" />
+              <span class="card__driving-option-label">Éco</span>
+            </button>
+            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="rain">
+              <img class="card__driving-option-icon" src="/icons/pluie.png" alt="" width="22" height="22" />
+              <span class="card__driving-option-label">Pluie</span>
+            </button>
+            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="winter">
+              <img class="card__driving-option-icon" src="/icons/flocon-de-neige.png" alt="" width="22" height="22" />
+              <span class="card__driving-option-label">Hiver</span>
+            </button>
           </div>
           <p class="card__driving-current" aria-live="polite"></p>
           <ul class="card__driving-recommendations"></ul>
