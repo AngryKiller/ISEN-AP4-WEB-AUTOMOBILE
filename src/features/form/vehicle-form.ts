@@ -168,7 +168,7 @@ function displayValidationErrors(errors: ValidationErrors): void {
     recommendedTirePressure: ['recommendedTirePressure'],
     trunkCapacityLiters: ['trunkCapacityLiters'],
     averageConsumption: ['averageConsumption'],
-    motorization: ['motorization'],
+    motorization: ['motorization', 'motorisation'],
   };
 
   for (const [field, message] of Object.entries(errors)) {
@@ -339,18 +339,18 @@ export function initVehicleForm(): void {
               vehicleForm.elements.namedItem('annee')) as HTMLInputElement | null;
             if (input) input.value = String(specs.year);
           }
-          if (specs.fuel) {
+          if (specs.motorization) {
             if (motorizationSelect) {
-              motorizationSelect.value =
-                specs.fuel === 'electric'
-                  ? 'electric'
-                  : specs.fuel === 'hybrid'
-                    ? 'hybrid'
-                    : 'thermal';
+              motorizationSelect.value = specs.motorization;
+              const tagMotor = document.getElementById('tag-source-motorisation');
+              if (tagMotor) tagMotor.textContent = 'NHTSA';
             }
 
             updateFuelField();
+            updateElectricFormFields();
+          }
 
+          if (specs.fuel) {
             if (fuelSelect) {
               fuelSelect.value =
                 specs.fuel === 'petrol'
@@ -358,12 +358,9 @@ export function initVehicleForm(): void {
                   : specs.fuel === 'diesel'
                     ? 'diesel'
                     : '';
+              const tagFuel = document.getElementById('tag-source-carburant');
+              if (tagFuel && fuelSelect.value) tagFuel.textContent = 'NHTSA';
             }
-
-            updateElectricFormFields();
-
-            const tag = document.getElementById('tag-source-carburant');
-            if (tag && fuelSelect?.value) tag.textContent = 'NHTSA';
           }
           if (specs.transmissionType) {
             const select = vehicleForm.elements.namedItem('transmissionType') as HTMLSelectElement | null;
@@ -436,18 +433,18 @@ export function initVehicleForm(): void {
         }
       }
 
-      if (ademeSpecs.fuel) {
+      if (ademeSpecs.motorization) {
         if (motorizationSelect) {
-          motorizationSelect.value =
-            ademeSpecs.fuel === 'electric'
-              ? 'electric'
-              : ademeSpecs.fuel === 'hybrid'
-                ? 'hybrid'
-                : 'thermal';
+          motorizationSelect.value = ademeSpecs.motorization;
+          const tagMotor = document.getElementById('tag-source-motorisation');
+          if (tagMotor) tagMotor.textContent = 'ADEME';
         }
 
         updateFuelField();
+        updateElectricFormFields();
+      }
 
+      if (ademeSpecs.fuel) {
         if (fuelSelect) {
           fuelSelect.value =
             ademeSpecs.fuel === 'petrol'
@@ -455,12 +452,9 @@ export function initVehicleForm(): void {
               : ademeSpecs.fuel === 'diesel'
                 ? 'diesel'
                 : '';
+          const tagFuel = document.getElementById('tag-source-carburant');
+          if (tagFuel && fuelSelect.value) tagFuel.textContent = 'ADEME';
         }
-
-        updateElectricFormFields();
-
-        const tag = document.getElementById('tag-source-carburant');
-        if (tag && fuelSelect?.value) tag.textContent = 'ADEME';
       }
 
       if (ademeSpecs.transmissionType) {

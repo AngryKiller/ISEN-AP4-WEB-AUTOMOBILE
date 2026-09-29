@@ -644,11 +644,13 @@ input[type='color'] {
   background: var(--diesel);
 }
 .badge[data-fuel='hybrid'],
-.badge[data-carburant='hybride'] {
+.badge[data-carburant='hybride'],
+.badge[data-motorization='hybrid'] {
   background: var(--hybrid);
 }
 .badge[data-fuel='electric'],
-.badge[data-carburant='electrique'] {
+.badge[data-carburant='electrique'],
+.badge[data-motorization='electric'] {
   background: var(--electric);
 }
 
