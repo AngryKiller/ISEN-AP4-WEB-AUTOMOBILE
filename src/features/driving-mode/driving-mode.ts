@@ -71,7 +71,7 @@ export function getDrivingModeOption(mode: DrivingMode, vehicle?: Vehicle): Driv
   const recommendations = [...base.recommendations];
 
   if (mode === 'eco') {
-    if (vehicle.fuel === 'electric') {
+    if (vehicle.motorization === 'electric') {
       recommendations.push("Activez la régénération d'énergie maximale au freinage.");
     } else if (vehicle.transmissionType?.startsWith('manual')) {
       recommendations.push('Passez les rapports supérieurs avant 2 000 tr/min.');
@@ -79,7 +79,7 @@ export function getDrivingModeOption(mode: DrivingMode, vehicle?: Vehicle): Driv
       recommendations.push('Privilégiez le roulage en roue libre (coasting).');
     }
     if (typeof vehicle.averageConsumption === 'number') {
-      const unit = vehicle.fuel === 'electric' ? 'kWh/100 km' : 'L/100 km';
+      const unit = vehicle.motorization === 'electric' ? 'kWh/100 km' : 'L/100 km';
       const target = (vehicle.averageConsumption * 0.88).toFixed(1);
       recommendations.push(`Cible éco suggérée : ~${target} ${unit} (réf. ${vehicle.averageConsumption}).`);
     }

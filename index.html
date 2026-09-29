@@ -75,10 +75,9 @@
           <select id="filtre">
             <option value="tous">Tous les véhicules</option>
             <option value="favoris">Favoris uniquement</option>
-            <option value="essence">Essence</option>
-            <option value="diesel">Diesel</option>
-            <option value="hybride">Hybride</option>
-            <option value="electrique">Électrique</option>
+            <option value="thermal">Thermique</option>
+            <option value="electric">Électrique</option>
+            <option value="hybrid">Hybride</option>
           </select>
         </label>
 
@@ -181,15 +180,24 @@
           </label>
 
           <label class="field field--form">
+            <span class="field__label">Motorisation <em>*</em></span>
+            <select name="motorization" required>
+              <option value="">— Choisir —</option>
+              <option value="thermal">Thermique</option>
+              <option value="electric">Électrique</option>
+              <option value="hybrid">Hybride</option>
+            </select>
+            <small class="field__error" data-error="motorization"></small>
+          </label>
+
+          <label class="field field--form" id="champ-carburant">
             <span class="field__label">Carburant <em>*</em> <span class="field__source-tag" id="tag-source-carburant"></span></span>
             <select name="carburant" required>
               <option value="">— Choisir —</option>
               <option value="essence">Essence</option>
               <option value="diesel">Diesel</option>
-              <option value="hybride">Hybride</option>
-              <option value="electrique">Électrique</option>
             </select>
-            <small class="field__error" data-erreur="carburant" data-error="fuel"></small>
+            <small class="field__error" data-error="fuel"></small>
           </label>
 
           <label class="field field--form">

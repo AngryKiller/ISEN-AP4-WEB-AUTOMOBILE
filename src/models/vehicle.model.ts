@@ -2,7 +2,11 @@
  * vehicle.model.ts — Data models and types for garage vehicles.
  */
 
-export const FUEL_TYPES = ['petrol', 'diesel', 'hybrid', 'electric'] as const;
+
+export const MOTORIZATION_TYPES = ['thermal', 'electric', 'hybrid'] as const;
+export type MotorizationType = (typeof MOTORIZATION_TYPES)[number];
+
+export const FUEL_TYPES = ['petrol', 'diesel'] as const;
 
 export type FuelType = (typeof FUEL_TYPES)[number];
 
@@ -60,7 +64,8 @@ export interface Vehicle {
   year: number;
   mileage: number;
   price: number;
-  fuel: FuelType;
+  motorization: MotorizationType;
+  fuel: FuelType | null;
   transmissionType?: TransmissionType;
   licensePlate?: string;
   vin?: string;
@@ -90,6 +95,7 @@ export interface VehicleFormInput {
   year: number;
   mileage: number;
   price: number;
+  motorization: MotorizationType | '';
   fuel: FuelType | '';
   transmissionType: TransmissionType | '';
   licensePlate: string;

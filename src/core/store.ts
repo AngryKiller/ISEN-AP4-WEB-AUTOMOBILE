@@ -136,7 +136,7 @@ export function getVisibleVehicles(): Vehicle[] {
   return store.vehicles
     .filter((vehicle) => {
       if (store.filter === 'favorites') return vehicle.favorite;
-      if (store.filter !== 'all') return vehicle.fuel === store.filter;
+      if (store.filter !== 'all') return vehicle.motorization === store.filter;
       return true;
     })
     .filter((vehicle) => {

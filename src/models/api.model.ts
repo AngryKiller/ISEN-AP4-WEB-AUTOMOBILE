@@ -2,7 +2,7 @@
  * api.model.ts — Types des réponses de l'API REST publique NHTSA.
  */
 
-import type { DriveType, FuelType, TransmissionType } from './vehicle.model';
+import type { DriveType, TransmissionType } from './vehicle.model';
 
 export interface NhtsaModelResult {
   Make_ID: number;
@@ -22,7 +22,7 @@ export interface VehicleSpecs {
   make?: string;
   model?: string;
   year?: number;
-  fuel?: FuelType;
+  fuel?: 'petrol' | 'diesel' | 'electric' | 'hybrid';
   transmissionType?: TransmissionType;
   wheelRimInches?: number;
   recommendedTirePressure?: number;

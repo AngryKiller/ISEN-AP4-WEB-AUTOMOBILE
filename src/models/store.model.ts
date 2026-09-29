@@ -2,7 +2,7 @@
  * store.model.ts — State models and reactive store types.
  */
 
-import type { FuelType, Vehicle } from './vehicle.model';
+import type { MotorizationType, Vehicle } from './vehicle.model';
 
 export type SortOption =
   | 'recent'
@@ -14,7 +14,7 @@ export type SortOption =
   | 'make'
   | 'trunk-desc';
 
-export type FilterOption = 'all' | 'favorites' | FuelType;
+export type FilterOption = 'all' | 'favorites' | MotorizationType;
 
 export interface GarageState {
   vehicles: Vehicle[];

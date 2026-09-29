@@ -3,7 +3,7 @@
  */
 
 import { DRIVE_LABELS, TRANSMISSION_LABELS, type Vehicle } from '../../models';
-import { formatCurrency, formatMileage, FUEL_LABELS } from '../../utils';
+import { formatCurrency, formatMileage, FUEL_LABELS, MOTORIZATION_LABELS } from '../../utils';
 import { getDrivingModeOption } from '../driving-mode';
 
 const cardTemplate = document.getElementById('tpl-carte') as HTMLTemplateElement | null;
@@ -75,7 +75,7 @@ export function updateCardContent(card: HTMLElement, vehicle: Vehicle): void {
   const avgConsoContainer = card.querySelector<HTMLElement>('.card__info-consumption');
   if (avgConsoElem && avgConsoContainer) {
     if (typeof vehicle.averageConsumption === 'number') {
-      const unit = vehicle.fuel === 'electric' ? 'kWh/100' : 'L/100';
+      const unit = vehicle.motorization === 'electric' ? 'kWh/100' : 'L/100';
       avgConsoElem.textContent = `${vehicle.averageConsumption} ${unit}`;
       avgConsoContainer.hidden = false;
     } else {
@@ -85,8 +85,13 @@ export function updateCardContent(card: HTMLElement, vehicle: Vehicle): void {
 
   const fuelBadge = card.querySelector<HTMLElement>('.card__fuel');
   if (fuelBadge) {
-    fuelBadge.textContent = FUEL_LABELS[vehicle.fuel] ?? vehicle.fuel;
-    fuelBadge.dataset.fuel = vehicle.fuel;
+    const motorization = MOTORIZATION_LABELS[vehicle.motorization];
+    const fuel = vehicle.fuel ? FUEL_LABELS[vehicle.fuel] : null;
+
+    fuelBadge.textContent = fuel
+      ? `${motorization} · ${fuel}`
+      : motorization;
+    fuelBadge.dataset.fuel = vehicle.fuel ?? vehicle.motorization;
   }
 
   const countryBadge = card.querySelector<HTMLElement>('.card__country');
@@ -119,7 +124,7 @@ export function updateCardContent(card: HTMLElement, vehicle: Vehicle): void {
   const maintenanceList = card.querySelector<HTMLElement>('.card__maintenance-list');
   if (maintenanceContainer && maintenanceList) {
     const lines: string[] = [];
-    if (vehicle.fuel !== 'electric' && typeof vehicle.nextOilChangeKm === 'number') {
+    if (vehicle.motorization !== 'electric' && typeof vehicle.nextOilChangeKm === 'number') {
       lines.push(`Vidange : ${formatMileage(vehicle.nextOilChangeKm)}`);
     }
     if (typeof vehicle.nextRevisionKm === 'number') {
@@ -185,7 +190,7 @@ export function updateCardContent(card: HTMLElement, vehicle: Vehicle): void {
     recommendationsList.classList.add('card__driving-recommendations--visible');
   }
 
-  const isElectric = vehicle.fuel === 'electric';
+  const isElectric = vehicle.motorization === 'electric';
 
   const pressureField = card.querySelector<HTMLElement>('[data-setting-field="tire-pressure"]');
   if (pressureField) {

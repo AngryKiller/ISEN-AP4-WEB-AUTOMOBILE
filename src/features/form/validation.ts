@@ -3,7 +3,12 @@
  */
 
 import { TRANSMISSION_TYPES } from '../../models';
-import type { FuelType, ValidationErrors, VehicleFormInput } from '../../models';
+import type {
+  FuelType,
+  MotorizationType,
+  ValidationErrors,
+  VehicleFormInput,
+} from '../../models';
 
 const MIN_YEAR = 1886; // First automobile patent (Benz Patent-Motorwagen)
 const MAX_YEAR = new Date().getFullYear() + 1;
@@ -42,8 +47,16 @@ export function validateVehicle(data: VehicleFormInput): ValidationErrors {
     errors.price = 'Doit être positif.';
   }
 
-  if (!data.fuel) {
+  if (!data.motorization) {
+    errors.motorization = 'Choisissez une motorisation.';
+  }
+
+  if (data.motorization !== 'electric' && !data.fuel) {
     errors.fuel = 'Choisissez un carburant.';
+  }
+
+  if (data.motorization === 'electric' && data.fuel) {
+    errors.fuel = 'Une motorisation électrique ne prend pas ce carburant.';
   }
 
   if (!data.transmissionType) {
@@ -130,12 +143,18 @@ export function normalizeFormData(formData: FormData): VehicleFormInput {
     return raw === '' ? NaN : Number(raw);
   };
 
-  const rawFuel = readText('fuel') || readText('carburant');
+  const rawMotorization = readText('motorization');
+  let motorization: MotorizationType | '' = '';
+
+  if (rawMotorization === 'thermal' ||rawMotorization === 'electric' ||rawMotorization === 'hybrid') {
+      motorization = rawMotorization;
+  }
+
+  const rawFuel = readText('carburant');
   let fuel: FuelType | '' = '';
-  if (rawFuel === 'petrol' || rawFuel === 'essence') fuel = 'petrol';
+
+  if (rawFuel === 'essence') fuel = 'petrol';
   else if (rawFuel === 'diesel') fuel = 'diesel';
-  else if (rawFuel === 'hybrid' || rawFuel === 'hybride') fuel = 'hybrid';
-  else if (rawFuel === 'electric' || rawFuel === 'electrique') fuel = 'electric';
 
   const make = readText('make') || readText('marque');
   const model = readText('model') || readText('modele');
@@ -166,6 +185,7 @@ export function normalizeFormData(formData: FormData): VehicleFormInput {
     year,
     mileage,
     price,
+    motorization,
     fuel,
     transmissionType,
     driveType,
