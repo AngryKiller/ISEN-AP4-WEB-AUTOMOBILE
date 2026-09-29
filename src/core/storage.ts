@@ -3,7 +3,7 @@
  */
 
 import type { ThemeChoice, Vehicle } from '../models';
-import { AVAILABLE_THEMES } from '../models';
+import { AVAILABLE_THEMES, DRIVING_MODES } from '../models';
 
 const STORAGE_KEY_VEHICLES = 'my-garage:vehicles';
 const LEGACY_KEY_VEHICLES = 'mon-garage:vehicules';
@@ -16,7 +16,24 @@ export function loadVehicles(): Vehicle[] | null {
       localStorage.getItem(STORAGE_KEY_VEHICLES) ?? localStorage.getItem(LEGACY_KEY_VEHICLES);
     if (!rawData) return null;
     const parsed = JSON.parse(rawData);
-    return Array.isArray(parsed) ? (parsed as Vehicle[]) : null;
+    if (!Array.isArray(parsed)) return null;
+
+    const vehicles = (parsed as Vehicle[]).map((vehicle) => ({
+      ...vehicle,
+      drivingMode: DRIVING_MODES.includes(vehicle.drivingMode) ? vehicle.drivingMode : 'comfort',
+      modeSettings: vehicle.modeSettings ?? {},
+    }));
+
+    if (
+      (parsed as Vehicle[]).some(
+        (vehicle) =>
+          !DRIVING_MODES.includes(vehicle.drivingMode) || vehicle.modeSettings === undefined,
+      )
+    ) {
+      saveVehicles(vehicles);
+    }
+
+    return vehicles;
   } catch {
     return null;
   }
