@@ -111,16 +111,28 @@ export function updateCardContent(card: HTMLElement, vehicle: Vehicle): void {
     recommendationsList.classList.add('card__driving-recommendations--visible');
   }
 
+  const isElectric = vehicle.fuel === 'electric';
+
+  const pressureField = card.querySelector<HTMLElement>('[data-setting-field="tire-pressure"]');
+  if (pressureField) {
+    pressureField.classList.toggle('card__driving-field--wide', isElectric);
+  }
+
   const pressureInput = card.querySelector<HTMLInputElement>('[data-setting="tire-pressure"]');
   if (pressureInput) {
     const pressure = modeSettings.recommendedTirePressure ?? vehicle.recommendedTirePressure;
     pressureInput.value = typeof pressure === 'number' ? String(pressure) : '';
   }
 
+  const consumptionField = card.querySelector<HTMLElement>('[data-setting-field="consumption"]');
+  if (consumptionField) {
+    consumptionField.hidden = isElectric;
+  }
+
   const consumptionInput = card.querySelector<HTMLInputElement>('[data-setting="consumption"]');
   if (consumptionInput) {
     consumptionInput.value =
-      typeof modeSettings.targetConsumption === 'number'
+      !isElectric && typeof modeSettings.targetConsumption === 'number'
         ? String(modeSettings.targetConsumption)
         : '';
   }

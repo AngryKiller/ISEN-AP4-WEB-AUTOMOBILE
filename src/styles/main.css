@@ -483,6 +483,10 @@ input[type='color'] {
   color: var(--text-secondary);
 }
 
+.card__driving-field[hidden] {
+  display: none;
+}
+
 .card__driving-field--wide {
   grid-column: 1 / -1;
 }

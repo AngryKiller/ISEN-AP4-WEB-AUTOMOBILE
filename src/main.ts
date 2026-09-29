@@ -100,17 +100,19 @@ garageContainer?.addEventListener('click', (event: MouseEvent) => {
     case 'save-mode-settings': {
       if (!vehicle) break;
 
+      const isElectric = vehicle.fuel === 'electric';
       const pressureInput = card?.querySelector<HTMLInputElement>('[data-setting="tire-pressure"]');
       const consumptionInput = card?.querySelector<HTMLInputElement>('[data-setting="consumption"]');
       const noteInput = card?.querySelector<HTMLTextAreaElement>('[data-setting="note"]');
       const pressure = pressureInput?.value.trim() ? Number(pressureInput.value) : undefined;
-      const consumption = consumptionInput?.value.trim()
+      const consumption = !isElectric && consumptionInput?.value.trim()
         ? Number(consumptionInput.value)
         : undefined;
 
       if (
         (pressure !== undefined && (Number.isNaN(pressure) || pressure < 0 || pressure > 6)) ||
-        (consumption !== undefined &&
+        (!isElectric &&
+          consumption !== undefined &&
           (Number.isNaN(consumption) || consumption < 0 || consumption > 50))
       ) {
         showToast('Vérifiez les valeurs des réglages.', 'danger');
@@ -119,7 +121,7 @@ garageContainer?.addEventListener('click', (event: MouseEvent) => {
 
       const settings: DrivingModeSettings = {
         recommendedTirePressure: pressure,
-        targetConsumption: consumption,
+        targetConsumption: isElectric ? undefined : consumption,
         note: noteInput?.value.trim() || undefined,
       };
       updateDrivingModeSettings(id, vehicle.drivingMode, settings);
