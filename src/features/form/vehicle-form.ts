@@ -18,6 +18,21 @@ const modelsDataList = document.getElementById('liste-modeles') as HTMLDataListE
 const modelsHint = document.getElementById('indice-modeles') as HTMLElement | null;
 const vinHint = document.getElementById('indice-vin') as HTMLElement | null;
 
+const motorizationSelect = vehicleForm?.elements.namedItem('motorization',) as HTMLSelectElement | null;
+const fuelSelect = vehicleForm?.elements.namedItem('carburant',) as HTMLSelectElement | null;
+const fuelField = document.getElementById('champ-carburant');
+
+function updateFuelField(): void {
+  if (!motorizationSelect || !fuelSelect || !fuelField) return;
+
+  const isElectric = motorizationSelect.value === 'electric';
+  fuelField.hidden = isElectric;
+  fuelSelect.disabled = isElectric;
+  fuelSelect.required = !isElectric;
+
+  if (isElectric) fuelSelect.value = '';
+}
+
 let currentRequestController: AbortController | null = null;
 let currentVinController: AbortController | null = null;
 
@@ -47,6 +62,7 @@ export function openVehicleForm(id: string | null = null): void {
     void loadModelSuggestions(vehicle.make);
   }
 
+  updateFuelField();
   updateElectricFormFields();
   modalDialog.showModal();
   const makeInput = (vehicleForm.elements.namedItem('make') ||
@@ -56,10 +72,12 @@ export function openVehicleForm(id: string | null = null): void {
 
 function updateElectricFormFields(): void {
   if (!vehicleForm) return;
-  const fuelSelect = (vehicleForm.elements.namedItem('fuel') ||
-    vehicleForm.elements.namedItem('carburant')) as HTMLSelectElement | null;
-  const isElectric = fuelSelect?.value === 'electrique' || fuelSelect?.value === 'electric';
-  const oilField = vehicleForm.querySelector<HTMLElement>('[name="nextOilChangeKm"]')?.closest<HTMLElement>('.field');
+
+  const isElectric = motorizationSelect?.value === 'electric';
+  const oilField = vehicleForm
+    .querySelector<HTMLElement>('[name="nextOilChangeKm"]')
+    ?.closest<HTMLElement>('.field');
+
   if (oilField) {
     oilField.hidden = isElectric;
   }
@@ -80,15 +98,13 @@ function populateForm(vehicle: Vehicle): void {
     kilometrage: vehicle.mileage,
     price: vehicle.price,
     prix: vehicle.price,
-    fuel: vehicle.fuel,
+    motorization: vehicle.motorization,
     carburant:
       vehicle.fuel === 'petrol'
         ? 'essence'
-        : vehicle.fuel === 'electric'
-          ? 'electrique'
-          : vehicle.fuel === 'hybrid'
-            ? 'hybride'
-            : 'diesel',
+        : vehicle.fuel === 'diesel'
+          ? 'diesel'
+          : '',
     transmissionType: vehicle.transmissionType,
     driveType: vehicle.driveType,
     licensePlate: vehicle.licensePlate,
@@ -152,6 +168,7 @@ function displayValidationErrors(errors: ValidationErrors): void {
     recommendedTirePressure: ['recommendedTirePressure'],
     trunkCapacityLiters: ['trunkCapacityLiters'],
     averageConsumption: ['averageConsumption'],
+    motorization: ['motorization'],
   };
 
   for (const [field, message] of Object.entries(errors)) {
@@ -185,15 +202,24 @@ function displayValidationErrors(errors: ValidationErrors): void {
 
 function clearValidationErrors(): void {
   if (!vehicleForm) return;
+
   vehicleForm
     .querySelectorAll('[data-error], [data-erreur]')
-    .forEach((element) => (element.textContent = ''));
+    .forEach((element) => {
+      element.textContent = '';
+    });
+
   vehicleForm
     .querySelectorAll('[aria-invalid]')
-    .forEach((element) => element.removeAttribute('aria-invalid'));
+    .forEach((element) => {
+      element.removeAttribute('aria-invalid');
+    });
+
   vehicleForm
     .querySelectorAll('.field--invalid')
-    .forEach((element) => element.classList.remove('field--invalid'));
+    .forEach((element) => {
+      element.classList.remove('field--invalid');
+    });
 }
 
 async function loadMakeOptions(): Promise<void> {
@@ -314,20 +340,30 @@ export function initVehicleForm(): void {
             if (input) input.value = String(specs.year);
           }
           if (specs.fuel) {
-            const select = (vehicleForm.elements.namedItem('fuel') ||
-              vehicleForm.elements.namedItem('carburant')) as HTMLSelectElement | null;
-            if (select) {
-              select.value =
+            if (motorizationSelect) {
+              motorizationSelect.value =
+                specs.fuel === 'electric'
+                  ? 'electric'
+                  : specs.fuel === 'hybrid'
+                    ? 'hybrid'
+                    : 'thermal';
+            }
+
+            updateFuelField();
+
+            if (fuelSelect) {
+              fuelSelect.value =
                 specs.fuel === 'petrol'
                   ? 'essence'
-                  : specs.fuel === 'electric'
-                    ? 'electrique'
-                    : specs.fuel === 'hybrid'
-                      ? 'hybride'
-                      : 'diesel';
-              const tag = document.getElementById('tag-source-carburant');
-              if (tag) tag.textContent = 'NHTSA';
+                  : specs.fuel === 'diesel'
+                    ? 'diesel'
+                    : '';
             }
+
+            updateElectricFormFields();
+
+            const tag = document.getElementById('tag-source-carburant');
+            if (tag && fuelSelect?.value) tag.textContent = 'NHTSA';
           }
           if (specs.transmissionType) {
             const select = vehicleForm.elements.namedItem('transmissionType') as HTMLSelectElement | null;
@@ -401,21 +437,30 @@ export function initVehicleForm(): void {
       }
 
       if (ademeSpecs.fuel) {
-        const fuelSelect = (vehicleForm.elements.namedItem('fuel') ||
-          vehicleForm.elements.namedItem('carburant')) as HTMLSelectElement | null;
+        if (motorizationSelect) {
+          motorizationSelect.value =
+            ademeSpecs.fuel === 'electric'
+              ? 'electric'
+              : ademeSpecs.fuel === 'hybrid'
+                ? 'hybrid'
+                : 'thermal';
+        }
+
+        updateFuelField();
+
         if (fuelSelect) {
           fuelSelect.value =
             ademeSpecs.fuel === 'petrol'
               ? 'essence'
-              : ademeSpecs.fuel === 'electric'
-                ? 'electrique'
-                : ademeSpecs.fuel === 'hybrid'
-                  ? 'hybride'
-                  : 'diesel';
-          updateElectricFormFields();
-          const tag = document.getElementById('tag-source-carburant');
-          if (tag) tag.textContent = 'ADEME';
+              : ademeSpecs.fuel === 'diesel'
+                ? 'diesel'
+                : '';
         }
+
+        updateElectricFormFields();
+
+        const tag = document.getElementById('tag-source-carburant');
+        if (tag && fuelSelect?.value) tag.textContent = 'ADEME';
       }
 
       if (ademeSpecs.transmissionType) {
@@ -459,6 +504,11 @@ export function initVehicleForm(): void {
     }
   });
 
+  motorizationSelect?.addEventListener('change', () => {
+    updateFuelField();
+    updateElectricFormFields();
+  });
+
   vehicleForm.addEventListener('submit', (event: SubmitEvent) => {
     event.preventDefault();
 
@@ -474,13 +524,17 @@ export function initVehicleForm(): void {
       return;
     }
 
+    const vehicleData = {
+        ...data,
+        fuel: data.motorization === 'electric' ? null : data.fuel,
+    };
     const id = formData.get('id');
     if (typeof id === 'string' && id) {
-      updateVehicle(id, data as Partial<Vehicle>);
+      updateVehicle(id, vehicleData as Partial<Vehicle>);
       animateCardUpdate(id);
       showToast(`${data.make} ${data.model} modifié.`, 'success');
     } else {
-      addVehicle(data as VehicleCreationData);
+      addVehicle(vehicleData as VehicleCreationData);
       showToast(`${data.make} ${data.model} ajouté au garage !`, 'success');
     }
     closeVehicleForm();

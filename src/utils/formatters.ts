@@ -2,7 +2,7 @@
  * formatters.ts — Formatting helpers for currency, mileage, and debounce utility.
  */
 
-import type { FuelType } from '../models';
+import type { FuelType, MotorizationType } from '../models';
 
 const currencyFormatter = new Intl.NumberFormat('fr-FR', {
   style: 'currency',
@@ -19,8 +19,12 @@ export const formatMileage = (distance: number): string => `${numberFormatter.fo
 export const FUEL_LABELS: Record<FuelType, string> = {
   petrol: 'Essence',
   diesel: 'Diesel',
-  hybrid: 'Hybride',
+};
+
+export const MOTORIZATION_LABELS: Record<MotorizationType, string> = {
+  thermal: 'Thermique',
   electric: 'Électrique',
+  hybrid: 'Hybride',
 };
 
 /** Delays function execution until quiet period has passed */

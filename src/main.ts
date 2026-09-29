@@ -49,10 +49,9 @@ filterSelect?.addEventListener('change', (event: Event) => {
   let filterValue: FilterOption = 'all';
   if (value === 'all' || value === 'tous') filterValue = 'all';
   else if (value === 'favorites' || value === 'favoris') filterValue = 'favorites';
-  else if (value === 'petrol' || value === 'essence') filterValue = 'petrol';
-  else if (value === 'diesel') filterValue = 'diesel';
-  else if (value === 'hybrid' || value === 'hybride') filterValue = 'hybrid';
-  else if (value === 'electric' || value === 'electrique') filterValue = 'electric';
+  else if (value === 'thermal' || value === 'electric' || value === 'hybrid') {
+    filterValue = value;
+  }
   store.filter = filterValue;
 });
 
@@ -101,7 +100,7 @@ garageContainer?.addEventListener('click', (event: MouseEvent) => {
     case 'save-mode-settings': {
       if (!vehicle) break;
 
-      const isElectric = vehicle.fuel === 'electric';
+      const isElectric = vehicle.motorization === 'electric';
       const pressureInput = card?.querySelector<HTMLInputElement>('[data-setting="tire-pressure"]');
       const consumptionInput = card?.querySelector<HTMLInputElement>('[data-setting="consumption"]');
       const noteInput = card?.querySelector<HTMLTextAreaElement>('[data-setting="note"]');
