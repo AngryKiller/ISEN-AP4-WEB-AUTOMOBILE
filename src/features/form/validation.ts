@@ -49,6 +49,13 @@ export function validateVehicle(data: VehicleFormInput): ValidationErrors {
     errors.licensePlate = 'Format attendu : AB-123-CD.';
   }
 
+  if (
+    typeof data.wheelRimInches === 'number' &&
+    (!Number.isInteger(data.wheelRimInches) || data.wheelRimInches < 13 || data.wheelRimInches > 22)
+  ) {
+    errors.wheelRimInches = 'Choisissez une taille entière entre 13 et 22 pouces.';
+  }
+
   if (typeof data.nextOilChangeKm === 'number' && Number.isNaN(data.nextOilChangeKm)) {
     errors.nextOilChangeKm = 'Valeur invalide.';
   } else if (typeof data.nextOilChangeKm === 'number' && data.nextOilChangeKm < 0) {
@@ -114,6 +121,7 @@ export function normalizeFormData(formData: FormData): VehicleFormInput {
   const nextRevisionKm = readNumber('nextRevisionKm');
   const lastRevisionDate = readText('lastRevisionDate');
   const maintenanceNotes = readText('maintenanceNotes');
+  const wheelRimInches = readNumber('wheelRimInches');
   const tirePressure = readNumber('tirePressure');
   const recommendedTirePressure = readNumber('recommendedTirePressure');
 
@@ -130,6 +138,7 @@ export function normalizeFormData(formData: FormData): VehicleFormInput {
     nextRevisionKm: Number.isNaN(nextRevisionKm) ? undefined : nextRevisionKm,
     lastRevisionDate: lastRevisionDate || undefined,
     maintenanceNotes: maintenanceNotes || undefined,
+    wheelRimInches: Number.isNaN(wheelRimInches) ? undefined : wheelRimInches,
     tirePressure: Number.isNaN(tirePressure) ? undefined : tirePressure,
     recommendedTirePressure: Number.isNaN(recommendedTirePressure)
       ? undefined

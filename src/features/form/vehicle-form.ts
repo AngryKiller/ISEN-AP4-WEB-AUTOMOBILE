@@ -74,6 +74,7 @@ function populateForm(vehicle: Vehicle): void {
     nextRevisionKm: vehicle.nextRevisionKm,
     lastRevisionDate: vehicle.lastRevisionDate,
     maintenanceNotes: vehicle.maintenanceNotes,
+    wheelRimInches: vehicle.wheelRimInches,
     tirePressure: vehicle.tirePressure,
     recommendedTirePressure: vehicle.recommendedTirePressure,
   };
@@ -114,6 +115,7 @@ function displayValidationErrors(errors: ValidationErrors): void {
     nextOilChangeKm: ['nextOilChangeKm'],
     nextRevisionKm: ['nextRevisionKm'],
     maintenanceNotes: ['maintenanceNotes'],
+    wheelRimInches: ['wheelRimInches'],
     tirePressure: ['tirePressure'],
     recommendedTirePressure: ['recommendedTirePressure'],
   };
