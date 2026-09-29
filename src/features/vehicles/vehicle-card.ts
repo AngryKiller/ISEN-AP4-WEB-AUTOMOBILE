@@ -38,10 +38,14 @@ export function updateCardContent(card: HTMLElement, vehicle: Vehicle): void {
 
   const subtitle = card.querySelector<HTMLElement>('.card__subtitle');
   if (subtitle) {
-    const transmission = vehicle.transmissionType
-      ? ` · ${TRANSMISSION_LABELS[vehicle.transmissionType]}`
-      : '';
-    subtitle.textContent = `${vehicle.year}${transmission}`;
+    const details: string[] = [];
+    if (vehicle.wheelRimInches) {
+      details.push(`Jantes ${vehicle.wheelRimInches} pouces`);
+    }
+    if (vehicle.transmissionType) {
+      details.push(TRANSMISSION_LABELS[vehicle.transmissionType]);
+    }
+    subtitle.textContent = details.length ? `${vehicle.year} · ${details.join(' · ')}` : `${vehicle.year}`;
   }
 
   const mileageElem = card.querySelector<HTMLElement>('.card__mileage');
