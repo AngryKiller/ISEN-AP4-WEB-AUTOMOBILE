@@ -32,6 +32,16 @@ export const TRANSMISSION_LABELS: Record<TransmissionType, string> = {
   sequential: 'Séquentielle',
 };
 
+export const DRIVE_TYPES = ['fwd', 'rwd', 'awd'] as const;
+
+export type DriveType = (typeof DRIVE_TYPES)[number];
+
+export const DRIVE_LABELS: Record<DriveType, string> = {
+  fwd: 'Traction (FWD)',
+  rwd: 'Propulsion (RWD)',
+  awd: '4 roues motrices (AWD/4x4)',
+};
+
 export const DRIVING_MODES = ['comfort', 'sport', 'eco', 'rain', 'winter'] as const;
 
 export type DrivingMode = (typeof DRIVING_MODES)[number];
@@ -53,6 +63,7 @@ export interface Vehicle {
   fuel: FuelType;
   transmissionType?: TransmissionType;
   licensePlate?: string;
+  vin?: string;
   color: string;
   favorite: boolean;
   drivingMode: DrivingMode;
@@ -66,6 +77,10 @@ export interface Vehicle {
   wheelRimInches?: number;
   tirePressure?: number;
   recommendedTirePressure?: number;
+  trunkCapacityLiters?: number;
+  averageConsumption?: number;
+  driveType?: DriveType;
+  countryOfOrigin?: string;
 }
 
 /** Raw form input data before creating a complete vehicle */
@@ -78,6 +93,7 @@ export interface VehicleFormInput {
   fuel: FuelType | '';
   transmissionType: TransmissionType | '';
   licensePlate: string;
+  vin?: string;
   color: string;
   nextOilChangeKm?: number;
   nextRevisionKm?: number;
@@ -86,6 +102,10 @@ export interface VehicleFormInput {
   wheelRimInches?: number;
   tirePressure?: number;
   recommendedTirePressure?: number;
+  trunkCapacityLiters?: number;
+  averageConsumption?: number;
+  driveType?: DriveType | '';
+  countryOfOrigin?: string;
 }
 
 /** Data required to create a new vehicle (id, favorite, createdAt are auto-generated) */

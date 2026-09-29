@@ -2,7 +2,7 @@
  * vehicle-form.ts — Add/edit modal dialog handling and autocompletion.
  */
 
-import { fetchMakes, fetchModelsByMake } from '../../core/api';
+import { decodeVin, fetchMakes, fetchModelsByMake, searchAdemeSpecs } from '../../core/api';
 import { addVehicle, findVehicleById, updateVehicle } from '../../core/store';
 import { normalizeFormData, validateVehicle } from './validation';
 import { debounce, showToast } from '../../utils';
@@ -16,16 +16,27 @@ const submitButton = document.getElementById('btn-valider') as HTMLButtonElement
 const makesDataList = document.getElementById('liste-marques') as HTMLDataListElement | null;
 const modelsDataList = document.getElementById('liste-modeles') as HTMLDataListElement | null;
 const modelsHint = document.getElementById('indice-modeles') as HTMLElement | null;
+const vinHint = document.getElementById('indice-vin') as HTMLElement | null;
 
 let currentRequestController: AbortController | null = null;
+let currentVinController: AbortController | null = null;
+
+function resetSourceTags(): void {
+  const tags = vehicleForm?.querySelectorAll('.field__source-tag');
+  tags?.forEach((t) => {
+    t.textContent = '';
+  });
+}
 
 export function openVehicleForm(id: string | null = null): void {
   if (!vehicleForm || !modalDialog) return;
 
   vehicleForm.reset();
   clearValidationErrors();
+  resetSourceTags();
   if (modelsDataList) modelsDataList.replaceChildren();
   if (modelsHint) modelsHint.textContent = '';
+  if (vinHint) vinHint.textContent = '';
 
   const vehicle = id ? findVehicleById(id) : null;
   if (formTitle) formTitle.textContent = vehicle ? 'Modifier le véhicule' : 'Ajouter un véhicule';
@@ -36,10 +47,22 @@ export function openVehicleForm(id: string | null = null): void {
     void loadModelSuggestions(vehicle.make);
   }
 
+  updateElectricFormFields();
   modalDialog.showModal();
   const makeInput = (vehicleForm.elements.namedItem('make') ||
     vehicleForm.elements.namedItem('marque')) as HTMLInputElement | null;
   makeInput?.focus();
+}
+
+function updateElectricFormFields(): void {
+  if (!vehicleForm) return;
+  const fuelSelect = (vehicleForm.elements.namedItem('fuel') ||
+    vehicleForm.elements.namedItem('carburant')) as HTMLSelectElement | null;
+  const isElectric = fuelSelect?.value === 'electrique' || fuelSelect?.value === 'electric';
+  const oilField = vehicleForm.querySelector<HTMLElement>('[name="nextOilChangeKm"]')?.closest<HTMLElement>('.field');
+  if (oilField) {
+    oilField.hidden = isElectric;
+  }
 }
 
 function populateForm(vehicle: Vehicle): void {
@@ -66,9 +89,11 @@ function populateForm(vehicle: Vehicle): void {
           : vehicle.fuel === 'hybrid'
             ? 'hybride'
             : 'diesel',
-              transmissionType: vehicle.transmissionType,
+    transmissionType: vehicle.transmissionType,
+    driveType: vehicle.driveType,
     licensePlate: vehicle.licensePlate,
     immatriculation: vehicle.licensePlate,
+    vin: vehicle.vin,
     color: vehicle.color,
     couleur: vehicle.color,
     nextOilChangeKm: vehicle.nextOilChangeKm,
@@ -78,6 +103,9 @@ function populateForm(vehicle: Vehicle): void {
     wheelRimInches: vehicle.wheelRimInches,
     tirePressure: vehicle.tirePressure,
     recommendedTirePressure: vehicle.recommendedTirePressure,
+    trunkCapacityLiters: vehicle.trunkCapacityLiters,
+    averageConsumption: vehicle.averageConsumption,
+    countryOfOrigin: vehicle.countryOfOrigin,
   };
 
   for (const [key, value] of Object.entries(fieldMapping)) {
@@ -113,13 +141,17 @@ function displayValidationErrors(errors: ValidationErrors): void {
     price: ['price', 'prix'],
     fuel: ['fuel', 'carburant'],
     transmissionType: ['transmissionType'],
+    driveType: ['driveType'],
     licensePlate: ['licensePlate', 'immatriculation'],
+    vin: ['vin'],
     nextOilChangeKm: ['nextOilChangeKm'],
     nextRevisionKm: ['nextRevisionKm'],
     maintenanceNotes: ['maintenanceNotes'],
     wheelRimInches: ['wheelRimInches'],
     tirePressure: ['tirePressure'],
     recommendedTirePressure: ['recommendedTirePressure'],
+    trunkCapacityLiters: ['trunkCapacityLiters'],
+    averageConsumption: ['averageConsumption'],
   };
 
   for (const [field, message] of Object.entries(errors)) {
@@ -203,7 +235,7 @@ async function loadModelSuggestions(make: string): Promise<void> {
       }),
     );
     modelsHint.textContent = models.length
-      ? `${models.length} modèles suggérés (API NHTSA)`
+      ? `${models.length} modèles suggérés (Europe ADEME & US)`
       : 'aucune suggestion';
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') return;
@@ -238,6 +270,170 @@ export function initVehicleForm(): void {
       void loadModelSuggestions(target.value);
     }, 350),
   );
+
+  const fuelSelect = (vehicleForm.elements.namedItem('fuel') ||
+    vehicleForm.elements.namedItem('carburant')) as HTMLSelectElement | null;
+  fuelSelect?.addEventListener('change', () => {
+    updateElectricFormFields();
+  });
+
+  const vinInput = vehicleForm.elements.namedItem('vin') as HTMLInputElement | null;
+  vinInput?.addEventListener('input', (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    target.value = target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+
+    currentVinController?.abort();
+
+    if (target.value.length === 17) {
+      const firstChar = target.value.charAt(0);
+      const isUS = firstChar >= '1' && firstChar <= '5';
+      if (vinHint) vinHint.textContent = isUS ? '⏳ décodage NHTSA (USA)…' : '⏳ décodage WMI (Europe)…';
+      currentVinController = new AbortController();
+
+      void decodeVin(target.value, currentVinController.signal)
+        .then((specs) => {
+          if (!specs || !vehicleForm) {
+            if (vinHint) vinHint.textContent = '❌ véhicule non identifié';
+            return;
+          }
+
+          if (specs.make) {
+            const input = (vehicleForm.elements.namedItem('make') ||
+              vehicleForm.elements.namedItem('marque')) as HTMLInputElement | null;
+            if (input) input.value = specs.make;
+            void loadModelSuggestions(specs.make);
+          }
+          if (specs.model) {
+            const input = (vehicleForm.elements.namedItem('model') ||
+              vehicleForm.elements.namedItem('modele')) as HTMLInputElement | null;
+            if (input) input.value = specs.model;
+          }
+          if (specs.year) {
+            const input = (vehicleForm.elements.namedItem('year') ||
+              vehicleForm.elements.namedItem('annee')) as HTMLInputElement | null;
+            if (input) input.value = String(specs.year);
+          }
+          if (specs.fuel) {
+            const select = (vehicleForm.elements.namedItem('fuel') ||
+              vehicleForm.elements.namedItem('carburant')) as HTMLSelectElement | null;
+            if (select) {
+              select.value =
+                specs.fuel === 'petrol'
+                  ? 'essence'
+                  : specs.fuel === 'electric'
+                    ? 'electrique'
+                    : specs.fuel === 'hybrid'
+                      ? 'hybride'
+                      : 'diesel';
+              const tag = document.getElementById('tag-source-carburant');
+              if (tag) tag.textContent = 'NHTSA';
+            }
+          }
+          if (specs.transmissionType) {
+            const select = vehicleForm.elements.namedItem('transmissionType') as HTMLSelectElement | null;
+            if (select) {
+              select.value = specs.transmissionType;
+              const tag = document.getElementById('tag-source-boite');
+              if (tag) tag.textContent = 'NHTSA';
+            }
+          }
+          if (specs.driveType) {
+            const select = vehicleForm.elements.namedItem('driveType') as HTMLSelectElement | null;
+            if (select) select.value = specs.driveType;
+          }
+          if (specs.wheelRimInches) {
+            const select = vehicleForm.elements.namedItem('wheelRimInches') as HTMLSelectElement | null;
+            if (select) select.value = String(specs.wheelRimInches);
+          }
+          if (specs.countryOfOrigin) {
+            const countryInput = vehicleForm.elements.namedItem('countryOfOrigin') as HTMLInputElement | null;
+            if (countryInput) countryInput.value = specs.countryOfOrigin;
+          }
+          updateElectricFormFields();
+
+          if (specs.origin === 'eu') {
+            if (vinHint) vinHint.textContent = `✓ ${specs.make} identifié (${specs.source})`;
+            showToast(`Marque identifiée : ${specs.make} ! Choisissez le modèle pour compléter avec l'ADEME.`, 'success');
+            const modelInput = (vehicleForm.elements.namedItem('model') ||
+              vehicleForm.elements.namedItem('modele')) as HTMLInputElement | null;
+            modelInput?.focus();
+          } else {
+            if (vinHint) vinHint.textContent = '✓ décodé avec succès';
+            showToast('Caractéristiques préremplies via l’API NHTSA !', 'success');
+          }
+        })
+        .catch((error) => {
+          if (error instanceof DOMException && error.name === 'AbortError') return;
+          if (vinHint) vinHint.textContent = '⚠️ erreur API';
+        });
+    } else {
+      if (vinHint) {
+        vinHint.textContent = target.value.length > 0 ? `${target.value.length}/17 car.` : '';
+      }
+    }
+  });
+
+  const modelInput = (vehicleForm.elements.namedItem('model') ||
+    vehicleForm.elements.namedItem('modele')) as HTMLInputElement | null;
+
+  const handleModelSpecLookup = (): void => {
+    const modelVal = modelInput?.value.trim() ?? '';
+    const makeVal = ((vehicleForm.elements.namedItem('make') ||
+      vehicleForm.elements.namedItem('marque')) as HTMLInputElement | null)?.value.trim() ?? '';
+
+    if (makeVal.length < 2 || modelVal.length < 2) return;
+
+    if (modelsHint) modelsHint.textContent = `⏳ recherche caractéristiques ${modelVal} (ADEME)…`;
+
+    void searchAdemeSpecs(makeVal, modelVal).then((ademeSpecs) => {
+      if (!ademeSpecs || !vehicleForm) {
+        if (modelsHint) modelsHint.textContent = '';
+        return;
+      }
+
+      if (typeof ademeSpecs.averageConsumption === 'number') {
+        const consoInput = vehicleForm.elements.namedItem('averageConsumption') as HTMLInputElement | null;
+        if (consoInput) {
+          consoInput.value = String(ademeSpecs.averageConsumption);
+          const tag = document.getElementById('tag-source-conso');
+          if (tag) tag.textContent = 'ADEME WLTP';
+        }
+      }
+
+      if (ademeSpecs.fuel) {
+        const fuelSelect = (vehicleForm.elements.namedItem('fuel') ||
+          vehicleForm.elements.namedItem('carburant')) as HTMLSelectElement | null;
+        if (fuelSelect) {
+          fuelSelect.value =
+            ademeSpecs.fuel === 'petrol'
+              ? 'essence'
+              : ademeSpecs.fuel === 'electric'
+                ? 'electrique'
+                : ademeSpecs.fuel === 'hybrid'
+                  ? 'hybride'
+                  : 'diesel';
+          updateElectricFormFields();
+          const tag = document.getElementById('tag-source-carburant');
+          if (tag) tag.textContent = 'ADEME';
+        }
+      }
+
+      if (ademeSpecs.transmissionType) {
+        const transSelect = vehicleForm.elements.namedItem('transmissionType') as HTMLSelectElement | null;
+        if (transSelect) {
+          transSelect.value = ademeSpecs.transmissionType;
+          const tag = document.getElementById('tag-source-boite');
+          if (tag) tag.textContent = 'ADEME';
+        }
+      }
+
+      if (modelsHint) modelsHint.textContent = '✓ caractéristiques ADEME appliquées';
+      showToast(`Données d'homologation récupérées (${modelVal} - ADEME Open Data) !`, 'success');
+    });
+  };
+
+  modelInput?.addEventListener('input', debounce(handleModelSpecLookup, 300));
+  modelInput?.addEventListener('change', handleModelSpecLookup);
 
   const plateInput = (vehicleForm.elements.namedItem('licensePlate') ||
     vehicleForm.elements.namedItem('immatriculation')) as HTMLInputElement | null;

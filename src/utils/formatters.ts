@@ -13,6 +13,7 @@ const currencyFormatter = new Intl.NumberFormat('fr-FR', {
 const numberFormatter = new Intl.NumberFormat('fr-FR');
 
 export const formatCurrency = (amount: number): string => currencyFormatter.format(amount);
+export const formatNumber = (value: number): string => numberFormatter.format(value);
 export const formatMileage = (distance: number): string => `${numberFormatter.format(distance)} km`;
 
 export const FUEL_LABELS: Record<FuelType, string> = {

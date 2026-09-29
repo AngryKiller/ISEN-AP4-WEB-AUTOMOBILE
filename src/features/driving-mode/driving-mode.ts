@@ -1,4 +1,4 @@
-import type { DrivingMode } from '../../models';
+import type { DrivingMode, Vehicle } from '../../models';
 
 export interface DrivingModeOption {
   id: DrivingMode;
@@ -64,6 +64,44 @@ export function isDrivingMode(value: string | undefined): value is DrivingMode {
   return DRIVING_MODE_OPTIONS.some((option) => option.id === value);
 }
 
-export function getDrivingModeOption(mode: DrivingMode): DrivingModeOption {
-  return DRIVING_MODE_OPTIONS.find((option) => option.id === mode) ?? DRIVING_MODE_OPTIONS[0]!;
+export function getDrivingModeOption(mode: DrivingMode, vehicle?: Vehicle): DrivingModeOption {
+  const base = DRIVING_MODE_OPTIONS.find((option) => option.id === mode) ?? DRIVING_MODE_OPTIONS[0]!;
+  if (!vehicle) return base;
+
+  const recommendations = [...base.recommendations];
+
+  if (mode === 'eco') {
+    if (vehicle.fuel === 'electric') {
+      recommendations.push("Activez la régénération d'énergie maximale au freinage.");
+    } else if (vehicle.transmissionType?.startsWith('manual')) {
+      recommendations.push('Passez les rapports supérieurs avant 2 000 tr/min.');
+    } else if (vehicle.transmissionType) {
+      recommendations.push('Privilégiez le roulage en roue libre (coasting).');
+    }
+    if (typeof vehicle.averageConsumption === 'number') {
+      const unit = vehicle.fuel === 'electric' ? 'kWh/100 km' : 'L/100 km';
+      const target = (vehicle.averageConsumption * 0.88).toFixed(1);
+      recommendations.push(`Cible éco suggérée : ~${target} ${unit} (réf. ${vehicle.averageConsumption}).`);
+    }
+  } else if (mode === 'sport') {
+    if (vehicle.driveType === 'rwd') {
+      recommendations.push('Propulsion (RWD) : dosez les accélérations en sortie de virage.');
+    } else if (vehicle.driveType === 'awd') {
+      recommendations.push('Transmission intégrale : relances franches avec grip optimal.');
+    }
+  } else if (mode === 'rain' || mode === 'winter') {
+    if (vehicle.driveType === 'rwd') {
+      recommendations.push('Attention au train arrière sur chaussée glissante (propulsion).');
+    } else if (vehicle.driveType === 'awd') {
+      recommendations.push('Motricité 4x4 active, gardez néanmoins vos distances de freinage.');
+    }
+    if (typeof vehicle.wheelRimInches === 'number' && vehicle.wheelRimInches >= 19) {
+      recommendations.push('Grandes jantes : vigilance accrue face aux nids-de-poule et à l’aquaplaning.');
+    }
+  }
+
+  return {
+    ...base,
+    recommendations,
+  };
 }

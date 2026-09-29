@@ -3,7 +3,7 @@
  */
 
 import { computeStatistics } from '../../core/store';
-import { formatCurrency, formatMileage } from '../../utils';
+import { formatCurrency, formatMileage, formatNumber } from '../../utils';
 
 export function renderStatistics(): void {
   const stats = computeStatistics();
@@ -11,6 +11,7 @@ export function renderStatistics(): void {
   animateNumericValue('stat-favoris', String(stats.favorites));
   animateNumericValue('stat-valeur', formatCurrency(stats.totalValue));
   animateNumericValue('stat-km', formatMileage(stats.averageMileage));
+  animateNumericValue('stat-coffre', `${formatNumber(stats.totalTrunkCapacity)} L`);
 }
 
 function animateNumericValue(elementId: string, text: string): void {

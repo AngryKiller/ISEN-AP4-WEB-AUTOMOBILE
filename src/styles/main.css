@@ -350,6 +350,10 @@ input[type='color'] {
   font-size: 0.95rem;
 }
 
+.card__info-list li[hidden] {
+  display: none;
+}
+
 .card__info-label {
   font-size: 0.72rem;
   font-weight: 500;
@@ -523,7 +527,14 @@ input[type='color'] {
   gap: 6px;
 }
 
-/* Fuel badge */
+.card__badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* Badges */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -533,6 +544,14 @@ input[type='color'] {
   font-weight: 700;
   color: #fff;
   background: var(--text-secondary);
+}
+
+.badge--country {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 0.72rem;
 }
 
 .badge[data-fuel='petrol'],
@@ -643,6 +662,22 @@ input[type='color'] {
   font-size: 0.72rem;
   font-weight: 400;
   color: var(--text-secondary);
+}
+
+.field__source-tag {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--surface-2);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  display: none;
+}
+
+.field__source-tag:not(:empty) {
+  display: inline-flex;
+  align-items: center;
 }
 
 .field__error {

@@ -56,6 +56,10 @@ export function validateVehicle(data: VehicleFormInput): ValidationErrors {
     errors.licensePlate = 'Format attendu : AB-123-CD.';
   }
 
+  if (data.vin && !/^[A-HJ-NPR-Z0-9]{17}$/.test(data.vin)) {
+    errors.vin = 'Un code VIN valide contient exactement 17 caractères (sans I, O, Q).';
+  }
+
   if (
     typeof data.wheelRimInches === 'number' &&
     (!Number.isInteger(data.wheelRimInches) || data.wheelRimInches < 13 || data.wheelRimInches > 22)
@@ -97,6 +101,24 @@ export function validateVehicle(data: VehicleFormInput): ValidationErrors {
     errors.recommendedTirePressure = 'Pression entre 0 et 6 bar.';
   }
 
+  if (typeof data.trunkCapacityLiters === 'number' && Number.isNaN(data.trunkCapacityLiters)) {
+    errors.trunkCapacityLiters = 'Valeur invalide.';
+  } else if (
+    typeof data.trunkCapacityLiters === 'number' &&
+    (data.trunkCapacityLiters < 0 || data.trunkCapacityLiters > 3000)
+  ) {
+    errors.trunkCapacityLiters = 'Volume entre 0 et 3 000 L.';
+  }
+
+  if (typeof data.averageConsumption === 'number' && Number.isNaN(data.averageConsumption)) {
+    errors.averageConsumption = 'Valeur invalide.';
+  } else if (
+    typeof data.averageConsumption === 'number' &&
+    (data.averageConsumption < 0 || data.averageConsumption > 50)
+  ) {
+    errors.averageConsumption = 'Consommation entre 0 et 50.';
+  }
+
   return errors;
 }
 
@@ -123,7 +145,9 @@ export function normalizeFormData(formData: FormData): VehicleFormInput {
     : readNumber('kilometrage');
   const price = !Number.isNaN(readNumber('price')) ? readNumber('price') : readNumber('prix');
   const transmissionType = readText('transmissionType') as VehicleFormInput['transmissionType'];
+  const driveType = (readText('driveType') || '') as VehicleFormInput['driveType'];
   const licensePlate = (readText('licensePlate') || readText('immatriculation')).toUpperCase();
+  const vin = readText('vin').toUpperCase();
   const color = readText('color') || readText('couleur') || '#e63946';
   const nextOilChangeKm = readNumber('nextOilChangeKm');
   const nextRevisionKm = readNumber('nextRevisionKm');
@@ -132,6 +156,9 @@ export function normalizeFormData(formData: FormData): VehicleFormInput {
   const wheelRimInches = readNumber('wheelRimInches');
   const tirePressure = readNumber('tirePressure');
   const recommendedTirePressure = readNumber('recommendedTirePressure');
+  const trunkCapacityLiters = readNumber('trunkCapacityLiters');
+  const averageConsumption = readNumber('averageConsumption');
+  const countryOfOrigin = readText('countryOfOrigin') || undefined;
 
   return {
     make,
@@ -141,8 +168,11 @@ export function normalizeFormData(formData: FormData): VehicleFormInput {
     price,
     fuel,
     transmissionType,
+    driveType,
     licensePlate,
+    vin: vin || undefined,
     color,
+    countryOfOrigin,
     nextOilChangeKm: Number.isNaN(nextOilChangeKm) ? undefined : nextOilChangeKm,
     nextRevisionKm: Number.isNaN(nextRevisionKm) ? undefined : nextRevisionKm,
     lastRevisionDate: lastRevisionDate || undefined,
@@ -152,5 +182,7 @@ export function normalizeFormData(formData: FormData): VehicleFormInput {
     recommendedTirePressure: Number.isNaN(recommendedTirePressure)
       ? undefined
       : recommendedTirePressure,
+    trunkCapacityLiters: Number.isNaN(trunkCapacityLiters) ? undefined : trunkCapacityLiters,
+    averageConsumption: Number.isNaN(averageConsumption) ? undefined : averageConsumption,
   };
 }

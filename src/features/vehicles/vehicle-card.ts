@@ -2,7 +2,7 @@
  * vehicle-card.ts — Creation, updates, and animations of individual vehicle cards.
  */
 
-import { TRANSMISSION_LABELS, type Vehicle } from '../../models';
+import { DRIVE_LABELS, TRANSMISSION_LABELS, type Vehicle } from '../../models';
 import { formatCurrency, formatMileage, FUEL_LABELS } from '../../utils';
 import { getDrivingModeOption } from '../driving-mode';
 
@@ -39,6 +39,9 @@ export function updateCardContent(card: HTMLElement, vehicle: Vehicle): void {
   const subtitle = card.querySelector<HTMLElement>('.card__subtitle');
   if (subtitle) {
     const details: string[] = [];
+    if (vehicle.driveType) {
+      details.push(DRIVE_LABELS[vehicle.driveType] ?? vehicle.driveType);
+    }
     if (vehicle.wheelRimInches) {
       details.push(`Jantes ${vehicle.wheelRimInches} pouces`);
     }
@@ -57,21 +60,70 @@ export function updateCardContent(card: HTMLElement, vehicle: Vehicle): void {
   const plateElem = card.querySelector<HTMLElement>('.card__plate');
   if (plateElem) plateElem.textContent = vehicle.licensePlate || '—';
 
+  const trunkElem = card.querySelector<HTMLElement>('.card__trunk');
+  const trunkContainer = card.querySelector<HTMLElement>('.card__info-trunk');
+  if (trunkElem && trunkContainer) {
+    if (typeof vehicle.trunkCapacityLiters === 'number') {
+      trunkElem.textContent = `${vehicle.trunkCapacityLiters} L`;
+      trunkContainer.hidden = false;
+    } else {
+      trunkContainer.hidden = true;
+    }
+  }
+
+  const avgConsoElem = card.querySelector<HTMLElement>('.card__avg-consumption');
+  const avgConsoContainer = card.querySelector<HTMLElement>('.card__info-consumption');
+  if (avgConsoElem && avgConsoContainer) {
+    if (typeof vehicle.averageConsumption === 'number') {
+      const unit = vehicle.fuel === 'electric' ? 'kWh/100' : 'L/100';
+      avgConsoElem.textContent = `${vehicle.averageConsumption} ${unit}`;
+      avgConsoContainer.hidden = false;
+    } else {
+      avgConsoContainer.hidden = true;
+    }
+  }
+
   const fuelBadge = card.querySelector<HTMLElement>('.card__fuel');
   if (fuelBadge) {
     fuelBadge.textContent = FUEL_LABELS[vehicle.fuel] ?? vehicle.fuel;
     fuelBadge.dataset.fuel = vehicle.fuel;
   }
 
+  const countryBadge = card.querySelector<HTMLElement>('.card__country');
+  if (countryBadge) {
+    if (vehicle.countryOfOrigin) {
+      const flagMap: Record<string, string> = {
+        France: '🇫🇷',
+        Allemagne: '🇩🇪',
+        'Royaume-Uni': '🇬🇧',
+        Italie: '🇮🇹',
+        Espagne: '🇪🇸',
+        Suède: '🇸🇪',
+        'République Tchèque': '🇨🇿',
+        Roumanie: '🇷🇴',
+        Japon: '🇯🇵',
+        'Corée du Sud': '🇰🇷',
+        USA: '🇺🇸',
+        Canada: '🇨🇦',
+        Mexique: '🇲🇽',
+      };
+      const flag = flagMap[vehicle.countryOfOrigin] ?? '🌍';
+      countryBadge.textContent = `${flag} ${vehicle.countryOfOrigin}`;
+      countryBadge.hidden = false;
+    } else {
+      countryBadge.hidden = true;
+    }
+  }
+
   const maintenanceContainer = card.querySelector<HTMLElement>('.card__maintenance');
   const maintenanceList = card.querySelector<HTMLElement>('.card__maintenance-list');
   if (maintenanceContainer && maintenanceList) {
     const lines: string[] = [];
-    if (typeof vehicle.nextOilChangeKm === 'number') {
-      lines.push(`Vidange : ${formatMileage(vehicle.nextOilChangeKm)} km`);
+    if (vehicle.fuel !== 'electric' && typeof vehicle.nextOilChangeKm === 'number') {
+      lines.push(`Vidange : ${formatMileage(vehicle.nextOilChangeKm)}`);
     }
     if (typeof vehicle.nextRevisionKm === 'number') {
-      lines.push(`Révision : ${formatMileage(vehicle.nextRevisionKm)} km`);
+      lines.push(`Révision : ${formatMileage(vehicle.nextRevisionKm)}`);
     }
     if (vehicle.lastRevisionDate) {
       lines.push(`Dernière révision : ${vehicle.lastRevisionDate}`);
@@ -95,7 +147,7 @@ export function updateCardContent(card: HTMLElement, vehicle: Vehicle): void {
     }
   }
 
-  const drivingMode = getDrivingModeOption(vehicle.drivingMode);
+  const drivingMode = getDrivingModeOption(vehicle.drivingMode, vehicle);
   const modeSettings = vehicle.modeSettings[vehicle.drivingMode] ?? {};
   const drivingCurrent = card.querySelector<HTMLElement>('.card__driving-current');
   if (drivingCurrent) drivingCurrent.textContent = `Mode sélectionné : ${drivingMode.icon} ${drivingMode.label}`;
