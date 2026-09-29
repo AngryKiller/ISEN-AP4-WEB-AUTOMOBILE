@@ -85,13 +85,17 @@ export function updateCardContent(card: HTMLElement, vehicle: Vehicle): void {
 
   const fuelBadge = card.querySelector<HTMLElement>('.card__fuel');
   if (fuelBadge) {
-    const motorization = MOTORIZATION_LABELS[vehicle.motorization];
+    const motorization = MOTORIZATION_LABELS[vehicle.motorization] ?? vehicle.motorization;
     const fuel = vehicle.fuel ? FUEL_LABELS[vehicle.fuel] : null;
 
     fuelBadge.textContent = fuel
       ? `${motorization} · ${fuel}`
       : motorization;
-    fuelBadge.dataset.fuel = vehicle.fuel ?? vehicle.motorization;
+    fuelBadge.dataset.fuel =
+      vehicle.motorization === 'hybrid'
+        ? 'hybrid'
+        : (vehicle.fuel ?? vehicle.motorization);
+    fuelBadge.dataset.motorization = vehicle.motorization;
   }
 
   const countryBadge = card.querySelector<HTMLElement>('.card__country');

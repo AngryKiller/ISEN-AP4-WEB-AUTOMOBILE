@@ -51,7 +51,7 @@ export function validateVehicle(data: VehicleFormInput): ValidationErrors {
     errors.motorization = 'Choisissez une motorisation.';
   }
 
-  if (data.motorization !== 'electric' && !data.fuel) {
+  if (data.motorization && data.motorization !== 'electric' && !data.fuel) {
     errors.fuel = 'Choisissez un carburant.';
   }
 
@@ -143,17 +143,21 @@ export function normalizeFormData(formData: FormData): VehicleFormInput {
     return raw === '' ? NaN : Number(raw);
   };
 
-  const rawMotorization = readText('motorization');
+  const rawMotorization = (readText('motorization') || readText('motorisation')).toLowerCase();
   let motorization: MotorizationType | '' = '';
 
-  if (rawMotorization === 'thermal' ||rawMotorization === 'electric' ||rawMotorization === 'hybrid') {
-      motorization = rawMotorization;
+  if (rawMotorization === 'thermal' || rawMotorization === 'thermique') {
+    motorization = 'thermal';
+  } else if (rawMotorization === 'electric' || rawMotorization === 'electrique') {
+    motorization = 'electric';
+  } else if (rawMotorization === 'hybrid' || rawMotorization === 'hybride') {
+    motorization = 'hybrid';
   }
 
-  const rawFuel = readText('carburant');
+  const rawFuel = (readText('fuel') || readText('carburant')).toLowerCase();
   let fuel: FuelType | '' = '';
 
-  if (rawFuel === 'essence') fuel = 'petrol';
+  if (rawFuel === 'petrol' || rawFuel === 'essence') fuel = 'petrol';
   else if (rawFuel === 'diesel') fuel = 'diesel';
 
   const make = readText('make') || readText('marque');

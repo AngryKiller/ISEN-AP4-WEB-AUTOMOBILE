@@ -2,7 +2,14 @@
  * api.ts — Network calls using the Fetch API.
  */
 
-import type { AdemeCarResult, NhtsaApiResponse, NhtsaModelResult, VehicleSpecs } from '../models';
+import type {
+  AdemeCarResult,
+  FuelType,
+  MotorizationType,
+  NhtsaApiResponse,
+  NhtsaModelResult,
+  VehicleSpecs,
+} from '../models';
 
 const NHTSA_BASE_URL = 'https://vpic.nhtsa.dot.gov/api/vehicles';
 const ADEME_BASE_URL = 'https://data.ademe.fr/data-fair/api/v1/datasets/ademe-car-labelling';
@@ -228,12 +235,18 @@ export async function searchAdemeSpecs(
           ? Number(((car.Conso_vitesse_mixte_Min + car.Conso_vitesse_mixte_Max) / 2).toFixed(1))
           : car.Conso_vitesse_mixte_Min ?? car.Conso_vitesse_mixte_Max;
 
-      const fuel = parseAdemeFuel(car.Energie);
+      const { motorization, fuel } = parseAdemeEnergy(car.Energie);
       const transmissionType = parseAdemeTransmission(car.Type_de_boite, car.Nombre_rapports);
 
-      if (conso !== undefined || fuel !== undefined || transmissionType !== undefined) {
+      if (
+        conso !== undefined ||
+        motorization !== undefined ||
+        fuel !== undefined ||
+        transmissionType !== undefined
+      ) {
         return {
           averageConsumption: conso,
+          motorization,
           fuel,
           transmissionType,
         };
@@ -246,21 +259,39 @@ export async function searchAdemeSpecs(
   return null;
 }
 
-function parseAdemeFuel(energy?: string): VehicleSpecs['fuel'] {
+function parseAdemeEnergy(energy?: string): { motorization?: MotorizationType; fuel?: FuelType } {
   const e = (energy ?? '').toUpperCase();
+  if (!e) return {};
+
   if (e.includes('ELEC') && !e.includes('ESS') && !e.includes('GAZ') && !e.includes('DIES')) {
-    return 'electric';
+    return { motorization: 'electric' };
   }
-  if (e.includes('HNR') || e.includes('HR') || e.includes('HYBRIDE') || (e.includes('ELEC') && (e.includes('ESS') || e.includes('GAZ')))) {
-    return 'hybrid';
+
+  const isHybrid =
+    e.includes('HNR') ||
+    e.includes('HR') ||
+    e.includes('HYBRIDE') ||
+    (e.includes('ELEC') && (e.includes('ESS') || e.includes('GAZ') || e.includes('DIES')));
+
+  const isDiesel = e.includes('DIESEL') || e.includes('GAZOLE');
+  const isPetrol = e.includes('ESSENCE') || e.includes('ESS') || e.includes('GAZ');
+
+  if (isHybrid) {
+    return {
+      motorization: 'hybrid',
+      fuel: isDiesel ? 'diesel' : 'petrol',
+    };
   }
-  if (e.includes('DIESEL') || e.includes('GAZOLE')) {
-    return 'diesel';
+
+  if (isDiesel) {
+    return { motorization: 'thermal', fuel: 'diesel' };
   }
-  if (e.includes('ESSENCE') || e.includes('ESS')) {
-    return 'petrol';
+
+  if (isPetrol) {
+    return { motorization: 'thermal', fuel: 'petrol' };
   }
-  return undefined;
+
+  return {};
 }
 
 function parseAdemeTransmission(typeBoite?: string, rapports?: number): VehicleSpecs['transmissionType'] {
@@ -355,11 +386,18 @@ async function decodeVinViaNhtsa(cleanVin: string, signal?: AbortSignal): Promis
     const rim = Number(res.WheelSizeFront) || Number(res.WheelSizeRear) || undefined;
     const year = Number(res.ModelYear) || undefined;
 
+    const { motorization, fuel } = parseNhtsaEnergy(
+      res.FuelTypePrimary,
+      res.FuelTypeSecondary,
+      res.ElectrificationLevel,
+    );
+
     const specs: VehicleSpecs = {
       make: res.Make?.trim() || undefined,
       model: res.Model?.trim() || undefined,
       year: year && !Number.isNaN(year) ? year : undefined,
-      fuel: parseNhtsaFuel(res.FuelTypePrimary, res.FuelTypeSecondary, res.ElectrificationLevel),
+      motorization,
+      fuel,
       transmissionType: parseNhtsaTransmission(res.TransmissionStyle, res.TransmissionSpeeds),
       driveType: parseNhtsaDriveType(res.DriveType),
       wheelRimInches: rim && rim >= 13 && rim <= 22 ? rim : undefined,
@@ -374,21 +412,41 @@ async function decodeVinViaNhtsa(cleanVin: string, signal?: AbortSignal): Promis
   }
 }
 
-function parseNhtsaFuel(primary?: string, secondary?: string, elecLevel?: string): VehicleSpecs['fuel'] {
+function parseNhtsaEnergy(
+  primary?: string,
+  secondary?: string,
+  elecLevel?: string,
+): { motorization?: MotorizationType; fuel?: FuelType } {
   const combined = `${primary ?? ''} ${secondary ?? ''} ${elecLevel ?? ''}`.toLowerCase();
+  if (!combined.trim()) return {};
+
   if (combined.includes('electric') && !combined.includes('gas') && !combined.includes('hybrid')) {
-    return 'electric';
+    return { motorization: 'electric' };
   }
-  if (combined.includes('hybrid') || (combined.includes('electric') && combined.includes('gas'))) {
-    return 'hybrid';
+
+  const isHybrid =
+    combined.includes('hybrid') ||
+    (combined.includes('electric') && (combined.includes('gas') || combined.includes('diesel')));
+
+  const isDiesel = combined.includes('diesel');
+  const isPetrol = combined.includes('gasoline') || combined.includes('petrol');
+
+  if (isHybrid) {
+    return {
+      motorization: 'hybrid',
+      fuel: isDiesel ? 'diesel' : 'petrol',
+    };
   }
-  if (combined.includes('diesel')) {
-    return 'diesel';
+
+  if (isDiesel) {
+    return { motorization: 'thermal', fuel: 'diesel' };
   }
-  if (combined.includes('gasoline') || combined.includes('petrol')) {
-    return 'petrol';
+
+  if (isPetrol) {
+    return { motorization: 'thermal', fuel: 'petrol' };
   }
-  return undefined;
+
+  return {};
 }
 
 function parseNhtsaTransmission(style?: string, speeds?: string): VehicleSpecs['transmissionType'] {
