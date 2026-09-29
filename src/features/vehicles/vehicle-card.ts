@@ -37,7 +37,11 @@ export function updateCardContent(card: HTMLElement, vehicle: Vehicle): void {
   if (title) title.textContent = `${vehicle.make} ${vehicle.model}`;
 
   const subtitle = card.querySelector<HTMLElement>('.card__subtitle');
-  if (subtitle) subtitle.textContent = `${vehicle.year}`;
+  if (subtitle) {
+    subtitle.textContent = vehicle.wheelRimInches
+      ? `${vehicle.year} · Jantes ${vehicle.wheelRimInches} pouces`
+      : `${vehicle.year}`;
+  }
 
   const mileageElem = card.querySelector<HTMLElement>('.card__mileage');
   if (mileageElem) mileageElem.textContent = formatMileage(vehicle.mileage);
