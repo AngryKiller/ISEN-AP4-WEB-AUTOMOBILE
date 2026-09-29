@@ -2,6 +2,7 @@
  * validation.ts — Validation rules for vehicle inputs.
  */
 
+import { TRANSMISSION_TYPES } from '../../models';
 import type { FuelType, ValidationErrors, VehicleFormInput } from '../../models';
 
 const MIN_YEAR = 1886; // First automobile patent (Benz Patent-Motorwagen)
@@ -43,6 +44,12 @@ export function validateVehicle(data: VehicleFormInput): ValidationErrors {
 
   if (!data.fuel) {
     errors.fuel = 'Choisissez un carburant.';
+  }
+
+  if (!data.transmissionType) {
+    errors.transmissionType = 'Choisissez un type de boîte.';
+  } else if (!(TRANSMISSION_TYPES as readonly string[]).includes(data.transmissionType)) {
+    errors.transmissionType = 'Choisissez un type de boîte valide.';
   }
 
   if (data.licensePlate && !LICENSE_PLATE_REGEX.test(data.licensePlate)) {
@@ -115,6 +122,7 @@ export function normalizeFormData(formData: FormData): VehicleFormInput {
     ? readNumber('mileage')
     : readNumber('kilometrage');
   const price = !Number.isNaN(readNumber('price')) ? readNumber('price') : readNumber('prix');
+  const transmissionType = readText('transmissionType') as VehicleFormInput['transmissionType'];
   const licensePlate = (readText('licensePlate') || readText('immatriculation')).toUpperCase();
   const color = readText('color') || readText('couleur') || '#e63946';
   const nextOilChangeKm = readNumber('nextOilChangeKm');
@@ -132,6 +140,7 @@ export function normalizeFormData(formData: FormData): VehicleFormInput {
     mileage,
     price,
     fuel,
+    transmissionType,
     licensePlate,
     color,
     nextOilChangeKm: Number.isNaN(nextOilChangeKm) ? undefined : nextOilChangeKm,

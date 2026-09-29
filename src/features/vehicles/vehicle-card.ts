@@ -2,7 +2,7 @@
  * vehicle-card.ts — Creation, updates, and animations of individual vehicle cards.
  */
 
-import type { Vehicle } from '../../models';
+import { TRANSMISSION_LABELS, type Vehicle } from '../../models';
 import { formatCurrency, formatMileage, FUEL_LABELS } from '../../utils';
 import { getDrivingModeOption } from '../driving-mode';
 
@@ -38,9 +38,14 @@ export function updateCardContent(card: HTMLElement, vehicle: Vehicle): void {
 
   const subtitle = card.querySelector<HTMLElement>('.card__subtitle');
   if (subtitle) {
-    subtitle.textContent = vehicle.wheelRimInches
-      ? `${vehicle.year} · Jantes ${vehicle.wheelRimInches} pouces`
-      : `${vehicle.year}`;
+    const details: string[] = [];
+    if (vehicle.wheelRimInches) {
+      details.push(`Jantes ${vehicle.wheelRimInches} pouces`);
+    }
+    if (vehicle.transmissionType) {
+      details.push(TRANSMISSION_LABELS[vehicle.transmissionType]);
+    }
+    subtitle.textContent = details.length ? `${vehicle.year} · ${details.join(' · ')}` : `${vehicle.year}`;
   }
 
   const mileageElem = card.querySelector<HTMLElement>('.card__mileage');
