@@ -66,6 +66,7 @@ function populateForm(vehicle: Vehicle): void {
           : vehicle.fuel === 'hybrid'
             ? 'hybride'
             : 'diesel',
+              transmissionType: vehicle.transmissionType,
     licensePlate: vehicle.licensePlate,
     immatriculation: vehicle.licensePlate,
     color: vehicle.color,
@@ -110,6 +111,7 @@ function displayValidationErrors(errors: ValidationErrors): void {
     mileage: ['mileage', 'kilometrage'],
     price: ['price', 'prix'],
     fuel: ['fuel', 'carburant'],
+    transmissionType: ['transmissionType'],
     licensePlate: ['licensePlate', 'immatriculation'],
     nextOilChangeKm: ['nextOilChangeKm'],
     nextRevisionKm: ['nextRevisionKm'],

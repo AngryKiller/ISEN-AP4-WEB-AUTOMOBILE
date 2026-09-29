@@ -175,6 +175,23 @@
           </label>
 
           <label class="field field--form">
+            <span class="field__label">Type de boîte de vitesses <em>*</em></span>
+            <select name="transmissionType" required>
+              <option value="">— Choisir —</option>
+              <option value="manual-5">Manuelle, 5 rapports</option>
+              <option value="manual-6">Manuelle, 6 rapports</option>
+              <option value="automatic-6">Automatique, 6 rapports</option>
+              <option value="automatic-8">Automatique, 8 rapports</option>
+              <option value="automatic-10">Automatique, 10 rapports</option>
+              <option value="dual-clutch">Double embrayage (DCT)</option>
+              <option value="cvt">Variation continue (CVT)</option>
+              <option value="automated-manual">Robotisée à simple embrayage</option>
+              <option value="sequential">Séquentielle</option>
+            </select>
+            <small class="field__error" data-error="transmissionType"></small>
+          </label>
+
+          <label class="field field--form">
             <span class="field__label">Immatriculation</span>
             <input type="text" name="immatriculation" placeholder="AB-123-CD" maxlength="9" autocomplete="off" />
             <small class="field__error" data-erreur="immatriculation" data-error="licensePlate"></small>

@@ -6,6 +6,32 @@ export const FUEL_TYPES = ['petrol', 'diesel', 'hybrid', 'electric'] as const;
 
 export type FuelType = (typeof FUEL_TYPES)[number];
 
+export const TRANSMISSION_TYPES = [
+  'manual-5',
+  'manual-6',
+  'automatic-6',
+  'automatic-8',
+  'automatic-10',
+  'dual-clutch',
+  'cvt',
+  'automated-manual',
+  'sequential',
+] as const;
+
+export type TransmissionType = (typeof TRANSMISSION_TYPES)[number];
+
+export const TRANSMISSION_LABELS: Record<TransmissionType, string> = {
+  'manual-5': 'Manuelle, 5 rapports',
+  'manual-6': 'Manuelle, 6 rapports',
+  'automatic-6': 'Automatique, 6 rapports',
+  'automatic-8': 'Automatique, 8 rapports',
+  'automatic-10': 'Automatique, 10 rapports',
+  'dual-clutch': 'Double embrayage (DCT)',
+  cvt: 'Variation continue (CVT)',
+  'automated-manual': 'Robotisée à simple embrayage',
+  sequential: 'Séquentielle',
+};
+
 export const DRIVING_MODES = ['comfort', 'sport', 'eco', 'rain', 'winter'] as const;
 
 export type DrivingMode = (typeof DRIVING_MODES)[number];
@@ -25,6 +51,7 @@ export interface Vehicle {
   mileage: number;
   price: number;
   fuel: FuelType;
+  transmissionType?: TransmissionType;
   licensePlate?: string;
   color: string;
   favorite: boolean;
@@ -48,6 +75,7 @@ export interface VehicleFormInput {
   mileage: number;
   price: number;
   fuel: FuelType | '';
+  transmissionType: TransmissionType | '';
   licensePlate: string;
   color: string;
   nextOilChangeKm?: number;
