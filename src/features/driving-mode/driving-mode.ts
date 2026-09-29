@@ -11,7 +11,7 @@ export const DRIVING_MODE_OPTIONS: readonly DrivingModeOption[] = [
   {
     id: 'comfort',
     label: 'Confort',
-    icon: '🚗',
+    icon: '/icons/mode-confort.png',
     recommendations: [
       'Adoptez une conduite souple et progressive.',
       'Privilégiez le confort des passagers.',
@@ -21,7 +21,7 @@ export const DRIVING_MODE_OPTIONS: readonly DrivingModeOption[] = [
   {
     id: 'sport',
     label: 'Sport',
-    icon: '🏎️',
+    icon: '/icons/mode-sport.png',
     recommendations: [
       'Gardez une conduite dynamique et maîtrisée.',
       'Surveillez la consommation et les distances de freinage.',
@@ -31,7 +31,7 @@ export const DRIVING_MODE_OPTIONS: readonly DrivingModeOption[] = [
   {
     id: 'eco',
     label: 'Éco',
-    icon: '🌱',
+    icon: '/icons/eco.png',
     recommendations: [
       'Accélérez progressivement et gardez une vitesse régulière.',
       'Évitez les accélérations et freinages inutiles.',
@@ -41,7 +41,7 @@ export const DRIVING_MODE_OPTIONS: readonly DrivingModeOption[] = [
   {
     id: 'rain',
     label: 'Pluie',
-    icon: '🌧️',
+    icon: '/icons/pluie.png',
     recommendations: [
       'Réduisez votre vitesse et augmentez les distances de sécurité.',
       'Anticipez les freinages sur une chaussée glissante.',
@@ -51,7 +51,7 @@ export const DRIVING_MODE_OPTIONS: readonly DrivingModeOption[] = [
   {
     id: 'winter',
     label: 'Hiver',
-    icon: '❄️',
+    icon: '/icons/flocon-de-neige.png',
     recommendations: [
       'Anticipez les freinages sur les routes glissantes.',
       'Vérifiez les équipements et pneus adaptés à la saison.',

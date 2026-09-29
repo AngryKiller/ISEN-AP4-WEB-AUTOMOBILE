@@ -11,7 +11,6 @@
     <!-- ===== En-tête ===== -->
     <header class="header">
       <div class="header__brand">
-        <span class="header__logo" aria-hidden="true">🚗</span>
         <div>
           <h1 class="header__title">Mon Garage</h1>
           <p class="header__subtitle">Ma collection de véhicules</p>
@@ -21,13 +20,15 @@
       <!-- Sélecteur de thème : auto / clair / sombre -->
       <div class="theme" role="group" aria-label="Choix du thème">
         <button type="button" class="theme__btn" data-theme-choix="auto" title="Automatique (système)">
-          <span aria-hidden="true">🖥️</span><span class="theme__label">Auto</span>
+          <span class="theme__label">Auto</span>
         </button>
         <button type="button" class="theme__btn" data-theme-choix="clair" title="Thème clair">
-          <span aria-hidden="true">☀️</span><span class="theme__label">Clair</span>
+          <img src="/icons/mode-nuit.png" alt="Mode clair" width="20" height="20" />
+          <span class="theme__label">Clair</span>
         </button>
         <button type="button" class="theme__btn" data-theme-choix="sombre" title="Thème sombre">
-          <span aria-hidden="true">🌙</span><span class="theme__label">Sombre</span>
+          <img src="/icons/mode-nuit-2.png" alt="Mode sombre" width="20" height="20" />
+          <span class="theme__label">Sombre</span>
         </button>
       </div>
     </header>
@@ -68,7 +69,7 @@
           <span class="visually-hidden">Filtrer</span>
           <select id="filtre">
             <option value="tous">Tous les véhicules</option>
-            <option value="favoris">❤️ Favoris uniquement</option>
+            <option value="favoris">Favoris uniquement</option>
             <option value="essence">Essence</option>
             <option value="diesel">Diesel</option>
             <option value="hybride">Hybride</option>
@@ -308,11 +309,11 @@
         <section class="card__driving-mode" aria-label="Mode de conduite">
           <p class="card__driving-mode-title">Mode de conduite</p>
           <div class="card__driving-options" role="group" aria-label="Choisir un mode de conduite">
-            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="comfort">🚗 Confort</button>
-            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="sport">🏎️ Sport</button>
-            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="eco">🌱 Éco</button>
-            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="rain">🌧️ Pluie</button>
-            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="winter">❄️ Hiver</button>
+            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="comfort"><img src="/icons/mode-confort.png" alt="Mode confort" width="20" height="20" /> Confort</button>
+            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="sport"><img src="/icons/mode-sport.png" alt="Mode sport" width="20" height="20" /> Sport</button>
+            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="eco"><img src="/icons/eco.png" alt="Mode éco" width="20" height="20" /> Éco</button>
+            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="rain"><img src="/icons/pluie.png" alt="Mode pluie" width="20" height="20" /> Pluie</button>
+            <button type="button" class="card__driving-option" data-action="mode-conduite" data-mode="winter"><img src="/icons/flocon-de-neige.png" alt="Mode hiver" width="20" height="20" /> Hiver</button>
           </div>
           <p class="card__driving-current" aria-live="polite"></p>
           <ul class="card__driving-recommendations"></ul>
