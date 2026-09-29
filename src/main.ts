@@ -67,6 +67,7 @@ sortSelect?.addEventListener('change', (event: Event) => {
   else if (value === 'price-asc' || value === 'prix-asc') sortOption = 'price-asc';
   else if (value === 'mileage-asc' || value === 'km-asc') sortOption = 'mileage-asc';
   else if (value === 'make' || value === 'marque') sortOption = 'make';
+  else if (value === 'trunk-desc' || value === 'coffre-desc') sortOption = 'trunk-desc';
   store.sortBy = sortOption;
 });
 

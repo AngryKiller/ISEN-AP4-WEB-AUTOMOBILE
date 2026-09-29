@@ -127,6 +127,7 @@ const SORT_COMPARATORS: Record<SortOption, SortComparator> = {
   'price-asc': (a, b) => a.price - b.price,
   'mileage-asc': (a, b) => a.mileage - b.mileage,
   make: (a, b) => a.make.localeCompare(b.make, 'fr') || a.model.localeCompare(b.model, 'fr'),
+  'trunk-desc': (a, b) => (b.trunkCapacityLiters ?? 0) - (a.trunkCapacityLiters ?? 0),
 };
 
 export function getVisibleVehicles(): Vehicle[] {
@@ -140,7 +141,7 @@ export function getVisibleVehicles(): Vehicle[] {
     })
     .filter((vehicle) => {
       if (!query) return true;
-      return `${vehicle.make} ${vehicle.model} ${vehicle.licensePlate ?? ''}`
+      return `${vehicle.make} ${vehicle.model} ${vehicle.licensePlate ?? ''} ${vehicle.vin ?? ''}`
         .toLowerCase()
         .includes(query);
     })
@@ -157,5 +158,9 @@ export function computeStatistics(): GarageStatistics {
     averageMileage: total
       ? Math.round(list.reduce((sum, vehicle) => sum + vehicle.mileage, 0) / total)
       : 0,
+    totalTrunkCapacity: list.reduce(
+      (sum, vehicle) => sum + (vehicle.trunkCapacityLiters ?? 0),
+      0,
+    ),
   };
 }

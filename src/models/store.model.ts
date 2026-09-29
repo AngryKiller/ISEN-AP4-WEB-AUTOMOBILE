@@ -11,7 +11,8 @@ export type SortOption =
   | 'price-desc'
   | 'price-asc'
   | 'mileage-asc'
-  | 'make';
+  | 'make'
+  | 'trunk-desc';
 
 export type FilterOption = 'all' | 'favorites' | FuelType;
 
@@ -27,6 +28,7 @@ export interface GarageStatistics {
   favorites: number;
   totalValue: number;
   averageMileage: number;
+  totalTrunkCapacity: number;
 }
 
 export type GarageStateKey = keyof GarageState;
