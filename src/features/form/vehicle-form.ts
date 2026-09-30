@@ -8,6 +8,7 @@ import { normalizeFormData, validateVehicle } from './validation';
 import { debounce, showToast } from '../../utils';
 import { animateCardUpdate } from '../vehicles/vehicle-card';
 import type { ValidationErrors, Vehicle, VehicleCreationData } from '../../models';
+import { calculateNextTechnicalInspectionDate } from '../../utils/technical-inspection';
 
 const modalDialog = document.getElementById('modale') as HTMLDialogElement | null;
 const vehicleForm = document.getElementById('formulaire') as HTMLFormElement | null;
@@ -21,6 +22,31 @@ const vinHint = document.getElementById('indice-vin') as HTMLElement | null;
 const motorizationSelect = vehicleForm?.elements.namedItem('motorization',) as HTMLSelectElement | null;
 const fuelSelect = vehicleForm?.elements.namedItem('carburant',) as HTMLSelectElement | null;
 const fuelField = document.getElementById('champ-carburant');
+
+function updateTechnicalInspectionDate(): void {
+  if (!vehicleForm) return;
+
+  const firstRegistrationInput = vehicleForm.elements.namedItem(
+    'firstRegistrationDate',
+  ) as HTMLInputElement | null;
+
+  const lastInspectionInput = vehicleForm.elements.namedItem(
+    'lastTechnicalInspectionDate',
+  ) as HTMLInputElement | null;
+
+  const nextInspectionInput = vehicleForm.elements.namedItem(
+    'nextTechnicalInspectionDate',
+  ) as HTMLInputElement | null;
+
+  if (!firstRegistrationInput || !lastInspectionInput || !nextInspectionInput) {
+    return;
+  }
+
+  nextInspectionInput.value = calculateNextTechnicalInspectionDate(
+    firstRegistrationInput.value,
+    lastInspectionInput.value,
+  );
+}
 
 function updateFuelField(): void {
   if (!motorizationSelect || !fuelSelect || !fuelField) return;
@@ -115,6 +141,9 @@ function populateForm(vehicle: Vehicle): void {
     nextOilChangeKm: vehicle.nextOilChangeKm,
     nextRevisionKm: vehicle.nextRevisionKm,
     lastRevisionDate: vehicle.lastRevisionDate,
+    firstRegistrationDate: vehicle.firstRegistrationDate,
+    lastTechnicalInspectionDate: vehicle.lastTechnicalInspectionDate,
+    nextTechnicalInspectionDate: vehicle.nextTechnicalInspectionDate,
     maintenanceNotes: vehicle.maintenanceNotes,
     wheelRimInches: vehicle.wheelRimInches,
     tirePressure: vehicle.tirePressure,
@@ -502,6 +531,24 @@ export function initVehicleForm(): void {
     updateFuelField();
     updateElectricFormFields();
   });
+
+  const firstRegistrationInput = vehicleForm.elements.namedItem(
+    'firstRegistrationDate',
+  ) as HTMLInputElement | null;
+
+  const lastInspectionInput = vehicleForm.elements.namedItem(
+    'lastTechnicalInspectionDate',
+  ) as HTMLInputElement | null;
+
+  firstRegistrationInput?.addEventListener(
+    'change',
+    updateTechnicalInspectionDate,
+  );
+
+  lastInspectionInput?.addEventListener(
+    'change',
+    updateTechnicalInspectionDate,
+  );
 
   vehicleForm.addEventListener('submit', (event: SubmitEvent) => {
     event.preventDefault();
