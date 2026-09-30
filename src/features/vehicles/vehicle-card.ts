@@ -137,6 +137,16 @@ export function updateCardContent(card: HTMLElement, vehicle: Vehicle): void {
     if (vehicle.lastRevisionDate) {
       lines.push(`Dernière révision : ${vehicle.lastRevisionDate}`);
     }
+
+    if (vehicle.nextTechnicalInspectionDate) {
+      const formattedDate = vehicle.nextTechnicalInspectionDate
+        .split('-')
+        .reverse()
+        .join('/');
+
+      lines.push(`Prochain contrôle technique : ${formattedDate}`);
+    }
+
     if (typeof vehicle.tirePressure === 'number') {
       const recommended = typeof vehicle.recommendedTirePressure === 'number'
         ? ` / ${vehicle.recommendedTirePressure.toFixed(1)} bar`

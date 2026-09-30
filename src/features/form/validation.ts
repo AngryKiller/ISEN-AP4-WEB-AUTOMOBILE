@@ -10,6 +10,8 @@ import type {
   VehicleFormInput,
 } from '../../models';
 
+import { isValidDate } from '../../utils/technical-inspection';
+
 const MIN_YEAR = 1886; // First automobile patent (Benz Patent-Motorwagen)
 const MAX_YEAR = new Date().getFullYear() + 1;
 const LICENSE_PLATE_REGEX = /^[A-Z]{2}-\d{3}-[A-Z]{2}$/;
@@ -132,6 +134,53 @@ export function validateVehicle(data: VehicleFormInput): ValidationErrors {
     errors.averageConsumption = 'Consommation entre 0 et 50.';
   }
 
+  const dateFields = [
+    'firstRegistrationDate',
+    'lastTechnicalInspectionDate',
+    'nextTechnicalInspectionDate',
+  ] as const;
+
+  dateFields.forEach((field) => {
+    const value = data[field];
+
+    if (value && !isValidDate(value)) {
+      errors[field] = 'Saisissez une date valide.';
+    }
+  });
+
+  const now = new Date();
+  const today = [
+    String(now.getFullYear()).padStart(4, '0'),
+    String(now.getMonth() + 1).padStart(2, '0'),
+    String(now.getDate()).padStart(2, '0'),
+  ].join('-');
+
+  if (
+    data.firstRegistrationDate &&
+    !errors.firstRegistrationDate &&
+    data.firstRegistrationDate > today
+  ) {
+    errors.firstRegistrationDate =
+      'La première mise en circulation ne peut pas être dans le futur.';
+  }
+
+  if (
+    data.lastTechnicalInspectionDate &&
+    !errors.lastTechnicalInspectionDate
+  ) {
+    if (data.lastTechnicalInspectionDate > today) {
+      errors.lastTechnicalInspectionDate =
+        'Le dernier contrôle ne peut pas être dans le futur.';
+    } else if (
+      data.firstRegistrationDate &&
+      !errors.firstRegistrationDate &&
+      data.lastTechnicalInspectionDate < data.firstRegistrationDate
+    ) {
+      errors.lastTechnicalInspectionDate =
+        'Le contrôle ne peut pas précéder la première mise en circulation.';
+    }
+  }
+
   return errors;
 }
 
@@ -175,6 +224,9 @@ export function normalizeFormData(formData: FormData): VehicleFormInput {
   const nextOilChangeKm = readNumber('nextOilChangeKm');
   const nextRevisionKm = readNumber('nextRevisionKm');
   const lastRevisionDate = readText('lastRevisionDate');
+  const firstRegistrationDate = readText('firstRegistrationDate');
+  const lastTechnicalInspectionDate = readText('lastTechnicalInspectionDate');
+  const nextTechnicalInspectionDate = readText('nextTechnicalInspectionDate');
   const maintenanceNotes = readText('maintenanceNotes');
   const wheelRimInches = readNumber('wheelRimInches');
   const tirePressure = readNumber('tirePressure');
@@ -200,6 +252,9 @@ export function normalizeFormData(formData: FormData): VehicleFormInput {
     nextOilChangeKm: Number.isNaN(nextOilChangeKm) ? undefined : nextOilChangeKm,
     nextRevisionKm: Number.isNaN(nextRevisionKm) ? undefined : nextRevisionKm,
     lastRevisionDate: lastRevisionDate || undefined,
+    firstRegistrationDate: firstRegistrationDate || undefined,
+    lastTechnicalInspectionDate: lastTechnicalInspectionDate || undefined,
+    nextTechnicalInspectionDate: nextTechnicalInspectionDate || undefined,
     maintenanceNotes: maintenanceNotes || undefined,
     wheelRimInches: Number.isNaN(wheelRimInches) ? undefined : wheelRimInches,
     tirePressure: Number.isNaN(tirePressure) ? undefined : tirePressure,

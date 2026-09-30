@@ -78,6 +78,9 @@ export interface Vehicle {
   nextOilChangeKm?: number;
   nextRevisionKm?: number;
   lastRevisionDate?: string;
+  firstRegistrationDate?: string;
+  lastTechnicalInspectionDate?: string;
+  nextTechnicalInspectionDate?: string;
   maintenanceNotes?: string;
   wheelRimInches?: number;
   tirePressure?: number;
@@ -104,6 +107,9 @@ export interface VehicleFormInput {
   nextOilChangeKm?: number;
   nextRevisionKm?: number;
   lastRevisionDate?: string;
+  firstRegistrationDate?: string;
+  lastTechnicalInspectionDate?: string;
+  nextTechnicalInspectionDate?: string;
   maintenanceNotes?: string;
   wheelRimInches?: number;
   tirePressure?: number;

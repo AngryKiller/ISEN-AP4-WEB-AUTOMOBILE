@@ -180,6 +180,27 @@
           </label>
 
           <label class="field field--form">
+            <span class="field__label">Première mise en circulation</span>
+            <input type="date" name="firstRegistrationDate" />
+            <small class="field__error" data-error="firstRegistrationDate"></small>
+          </label>
+
+          <label class="field field--form">
+            <span class="field__label">Dernier contrôle technique favorable</span>
+            <input type="date" name="lastTechnicalInspectionDate" />
+            <small class="field__error" data-error="lastTechnicalInspectionDate"></small>
+          </label>
+
+          <label class="field field--form">
+            <span class="field__label">Date limite du prochain contrôle technique</span>
+            <input type="date" name="nextTechnicalInspectionDate" />
+            <small>
+              Échéance proposée automatiquement, modifiable selon votre procès-verbal.
+            </small>
+            <small class="field__error" data-error="nextTechnicalInspectionDate"></small>
+          </label>
+
+          <label class="field field--form">
             <span class="field__label">Motorisation <em>*</em> <span class="field__source-tag" id="tag-source-motorisation"></span></span>
             <select name="motorization" required>
               <option value="">— Choisir —</option>
